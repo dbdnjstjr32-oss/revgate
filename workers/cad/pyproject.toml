@@ -1,0 +1,35 @@
+[project]
+name = "revgate-cad-worker"
+version = "0.1.0"
+description = "RevGate CAD worker: 1-Job-1-Subprocess OCP (OCCT) engine - STEP ingest, _FACE_ID GLB, auto-align, B-Rep diff"
+readme = "README.md"
+# Runtime is pinned to the linux/amd64 python:3.11-slim-bookworm image (blueprint §1.2).
+requires-python = ">=3.11,<3.12"
+dependencies = [
+  "cadquery-ocp==7.8.1.1.post1",
+  "numpy>=2.0,<3",
+  "scipy>=1.13,<2",
+  "pygltflib==1.16.5",
+  "revgate-contracts",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.3",
+  "jsonschema>=4.23",
+]
+
+[tool.uv]
+# Not an installable package: the engine runs as `python -m src.<module>` from workers/cad.
+package = false
+
+[tool.uv.sources]
+revgate-contracts = { path = "../../packages/contracts/py", editable = true }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra --strict-markers"
+markers = [
+  "golden: Golden STEP regression suite (blueprint §7.1)",
+]

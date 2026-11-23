@@ -1,0 +1,30 @@
+{
+  "case": "03_transform_shift",
+  "description": "01 Rev B moved by t=(120,-45,80) mm and R=Rz(37)·Ry(0)·Rx(90) deg",
+  "generation_transform_B": [
+    0.7986355100472928,
+    -3.685054208909731e-17,
+    0.6018150231520483,
+    120.0,
+    0.6018150231520483,
+    4.8902321053241553e-17,
+    -0.7986355100472928,
+    -45.0,
+    0.0,
+    1.0,
+    6.123233995736766e-17,
+    80.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+  ],
+  "expect": {
+    "method": "AUTO_BREP_RANSAC",
+    "confidence_min": 0.85,
+    "rms_max_mm": 0.005,
+    "HOLE_DIAMETER": 2
+  },
+  "volume_A_mm3": 119315.76112,
+  "volume_B_mm3": 119103.703616
+}

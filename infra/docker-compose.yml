@@ -1,0 +1,115 @@
+# RevGate local infrastructure (blueprint §1.2)
+#
+#   docker compose -f infra/docker-compose.yml up -d          # postgres + redis + minio (+ bucket init)
+#   docker compose -f infra/docker-compose.yml run --rm cad-worker pytest
+#
+# - postgres / redis / minio run in Docker; apps/api and apps/web run on the host for fast HMR.
+# - cad-worker sits behind the "cad" profile: Phase 1 ships the 1-Job-1-Subprocess engine + CLI,
+#   the long-running ARQ entrypoint (q-ingest / q-diff-*) lands with the API phase.
+name: revgate
+
+x-minio-credentials: &minio-credentials
+  MINIO_ROOT_USER: ${MINIO_ROOT_USER:-revgate}
+  MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-revgate-dev-secret}
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-revgate}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-revgate}
+      POSTGRES_DB: ${POSTGRES_DB:-revgate}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  # Local stand-in for Cloudflare R2 (S3 API). Upstream minio/minio is no longer pullable from
+  # Docker Hub / quay.io, so the default is the upstream-compatible community build (same
+  # entrypoint, CLI and S3 semantics). Override with MINIO_IMAGE if you have another source.
+  minio:
+    image: ${MINIO_IMAGE:-pgsty/minio:RELEASE.2026-08-04T00-00-00Z}
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      <<: *minio-credentials
+      # Server-wide CORS allow-list (bucket-level rules are also applied by minio-init.sh).
+      MINIO_API_CORS_ALLOW_ORIGIN: ${WEB_ORIGIN:-http://localhost:3000}
+    ports:
+      - "${MINIO_API_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:9000/minio/health/live"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  # One-shot: creates the 3 production-parity buckets + CORS for the Next.js origin (idempotent).
+  minio-init:
+    image: ${MC_IMAGE:-pgsty/mc:RELEASE.2026-11-12T00-00-00Z}
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "/init/minio-init.sh"]
+    environment:
+      <<: *minio-credentials
+      MINIO_ENDPOINT: http://minio:9000
+      WEB_ORIGIN: ${WEB_ORIGIN:-http://localhost:3000}
+      RAW_BUCKET: revgate-raw-cad
+      VIEWER_BUCKET: revgate-viewer-derived
+      AUDIT_BUCKET: revgate-audit-proofs
+    volumes:
+      - ./minio-init.sh:/init/minio-init.sh:ro
+    restart: "no"
+
+  cad-worker:
+    profiles: ["cad"]
+    platform: linux/amd64
+    build:
+      context: ..
+      dockerfile: workers/cad/Dockerfile
+    image: revgate/cad-worker:dev
+    # 1-Job-1-Subprocess scratch lives on RAM only (Mode B zero-retention friendly).
+    tmpfs:
+      - /tmp/revgate_scratch:size=1G
+    mem_limit: 2g
+    # Without this Docker allows +2g of swap on top (memory.swap.max), so a runaway job swaps
+    # instead of being OOM-killed (-9 -> OOM_KILLED). Equal values = hard 2g limit.
+    memswap_limit: 2g
+    environment:
+      REVGATE_SCRATCH_DIR: /tmp/revgate_scratch
+      REDIS_URL: redis://redis:6379/0
+      S3_ENDPOINT_URL: http://minio:9000
+      S3_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-revgate}
+      S3_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-revgate-dev-secret}
+    volumes:
+      # Dev bind mounts: edit on the host, run inside linux/amd64 (deps stay in /opt/venv).
+      - ../workers/cad:/app/workers/cad
+      - ../packages/contracts:/app/packages/contracts
+
+volumes:
+  pgdata: {}
+  redisdata: {}
+  miniodata: {}

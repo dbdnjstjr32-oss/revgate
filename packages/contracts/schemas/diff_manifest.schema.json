@@ -1,0 +1,344 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://revgate.io/schemas/diff_manifest/1.0.0/diff_manifest.schema.json",
+  "title": "DiffManifest",
+  "description": "One manifest per DiffRun (IMPLEMENTATION_BLUEPRINT §2.3). Coordinates are in the Base (Rev A) frame, mm, Z-up. Face ids reference each revision's analytical_meta.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "diff_run_id",
+    "base_revision_id",
+    "target_revision_id",
+    "alignment",
+    "summary",
+    "face_status_map",
+    "changes",
+    "artifacts"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "diff_run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "base_revision_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_revision_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "alignment": {
+      "$ref": "#/$defs/Alignment"
+    },
+    "summary": {
+      "$ref": "#/$defs/DiffSummary"
+    },
+    "face_status_map": {
+      "$ref": "#/$defs/FaceStatusMap"
+    },
+    "changes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Change"
+      }
+    },
+    "artifacts": {
+      "$ref": "#/$defs/DiffArtifacts"
+    }
+  },
+  "$defs": {
+    "Vec3": {
+      "title": "Vec3",
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "Alignment": {
+      "title": "Alignment",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "transform_4x4",
+        "confidence",
+        "rms_error_mm",
+        "requires_manual_review"
+      ],
+      "properties": {
+        "method": {
+          "enum": [
+            "IDENTITY",
+            "AUTO_BREP_RANSAC",
+            "MANUAL_321"
+          ]
+        },
+        "transform_4x4": {
+          "description": "length 16, Row-Major, maps Target (Rev B) coordinates -> Base (Rev A) coordinates.",
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 16,
+          "maxItems": 16,
+          "tsType": "number[]"
+        },
+        "confidence": {
+          "description": "0..1 inlier area ratio: sum(Area(inlier base faces)) / min(TotalArea_base, TotalArea_target).",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "rms_error_mm": {
+          "type": "number",
+          "minimum": 0
+        },
+        "requires_manual_review": {
+          "type": "boolean"
+        }
+      }
+    },
+    "DiffSummary": {
+      "title": "DiffSummary",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "geometry_identical",
+        "total_changes",
+        "volume_delta_mm3",
+        "boolean_status"
+      ],
+      "properties": {
+        "geometry_identical": {
+          "type": "boolean"
+        },
+        "total_changes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "volume_delta_mm3": {
+          "description": "Volume(Target) - Volume(Base).",
+          "type": "number"
+        },
+        "boolean_status": {
+          "enum": [
+            "OK",
+            "FALLBACK_HEATMAP",
+            "SKIPPED"
+          ]
+        }
+      }
+    },
+    "FaceStatusMap": {
+      "title": "FaceStatusMap",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "base",
+        "target"
+      ],
+      "properties": {
+        "base": {
+          "$ref": "#/$defs/BaseFaceStatus"
+        },
+        "target": {
+          "$ref": "#/$defs/TargetFaceStatus"
+        }
+      }
+    },
+    "BaseFaceStatus": {
+      "title": "BaseFaceStatus",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unchanged",
+        "modified",
+        "removed"
+      ],
+      "properties": {
+        "unchanged": {
+          "$ref": "#/$defs/FaceIdList"
+        },
+        "modified": {
+          "$ref": "#/$defs/FaceIdList"
+        },
+        "removed": {
+          "$ref": "#/$defs/FaceIdList"
+        }
+      }
+    },
+    "TargetFaceStatus": {
+      "title": "TargetFaceStatus",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unchanged",
+        "modified",
+        "added"
+      ],
+      "properties": {
+        "unchanged": {
+          "$ref": "#/$defs/FaceIdList"
+        },
+        "modified": {
+          "$ref": "#/$defs/FaceIdList"
+        },
+        "added": {
+          "$ref": "#/$defs/FaceIdList"
+        }
+      }
+    },
+    "FaceIdList": {
+      "title": "FaceIdList",
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "uniqueItems": true
+    },
+    "Change": {
+      "title": "Change",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "change_id",
+        "category",
+        "severity",
+        "title",
+        "fact",
+        "base_face_ids",
+        "target_face_ids",
+        "anchor_xyz",
+        "camera_focus"
+      ],
+      "properties": {
+        "change_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "enum": [
+            "HOLE_DIAMETER",
+            "HOLE_POSITION",
+            "PLANAR_OFFSET",
+            "WALL_THICKNESS",
+            "VOLUME_DELTA"
+          ]
+        },
+        "severity": {
+          "enum": [
+            "CRITICAL",
+            "MAJOR",
+            "INFO"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fact": {
+          "description": "100% geometric facts (never estimates).",
+          "type": "object",
+          "additionalProperties": {
+            "type": [
+              "number",
+              "string"
+            ]
+          }
+        },
+        "engineering_hint": {
+          "$ref": "#/$defs/EngineeringHint"
+        },
+        "base_face_ids": {
+          "$ref": "#/$defs/FaceIdList"
+        },
+        "target_face_ids": {
+          "$ref": "#/$defs/FaceIdList"
+        },
+        "anchor_xyz": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "camera_focus": {
+          "$ref": "#/$defs/CameraFocus"
+        }
+      }
+    },
+    "EngineeringHint": {
+      "title": "EngineeringHint",
+      "description": "Reference estimate, always rendered separately from facts.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "text",
+        "confidence"
+      ],
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "confidence": {
+          "enum": [
+            "HIGH",
+            "LOW"
+          ]
+        }
+      }
+    },
+    "CameraFocus": {
+      "title": "CameraFocus",
+      "description": "`suggested_dir` is a unit vector; camera position = target + suggested_dir * (radius_mm * 2.8).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "suggested_dir",
+        "radius_mm"
+      ],
+      "properties": {
+        "target": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "suggested_dir": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "radius_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    },
+    "DiffArtifacts": {
+      "title": "DiffArtifacts",
+      "description": "Paths relative to the DiffRun output prefix (null when not produced).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "delta_added_glb",
+        "delta_removed_glb"
+      ],
+      "properties": {
+        "delta_added_glb": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "delta_removed_glb": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

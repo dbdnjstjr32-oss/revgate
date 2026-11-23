@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0.0",
+  "revision_id": "rev_0192f3c4-a1b2-7c3d-8e4f-000000000001",
+  "source_unit": "MM",
+  "summary": {
+    "bbox_min": [0, 0, 0],
+    "bbox_max": [100, 60, 20],
+    "volume_mm3": 119657.8,
+    "face_count": 4,
+    "is_watertight": true,
+    "warnings": []
+  },
+  "faces": [
+    {
+      "face_id": 0,
+      "surface_type": "PLANE",
+      "area_mm2": 5965.79,
+      "centroid": [50.02, 29.98, 20],
+      "bbox_min": [0, 0, 20],
+      "bbox_max": [100, 60, 20],
+      "lod0_tri_range": [0, 96],
+      "adjacent_face_ids": [1, 2],
+      "params": { "type": "PLANE", "origin": [50.02, 29.98, 20], "normal": [0, 0, 1] }
+    },
+    {
+      "face_id": 1,
+      "surface_type": "CYLINDER",
+      "area_mm2": 207.35,
+      "centroid": [12, 10, 10],
+      "bbox_min": [10.35, 8.35, 0],
+      "bbox_max": [13.65, 11.65, 20],
+      "lod0_tri_range": [96, 64],
+      "adjacent_face_ids": [0],
+      "params": {
+        "type": "CYLINDER",
+        "axis_origin": [12, 10, 10],
+        "axis_dir": [0, 0, 1],
+        "radius_mm": 1.65,
+        "height_mm": 20,
+        "sweep_deg": 360,
+        "is_internal": true
+      }
+    },
+    {
+      "face_id": 2,
+      "surface_type": "CONE",
+      "area_mm2": 18.6,
+      "centroid": [40, 30, 19.4],
+      "bbox_min": [37.5, 27.5, 18.75],
+      "bbox_max": [42.5, 32.5, 20],
+      "lod0_tri_range": [160, 48],
+      "adjacent_face_ids": [0],
+      "params": {
+        "type": "CONE",
+        "axis_origin": [40, 30, 19.375],
+        "axis_dir": [0, 0, 1],
+        "half_angle_deg": 45,
+        "r_min": 1.25,
+        "r_max": 2.5,
+        "is_internal": true
+      }
+    },
+    {
+      "face_id": 3,
+      "surface_type": "SPHERE",
+      "area_mm2": 25.13,
+      "centroid": [80, 30, 21],
+      "bbox_min": [78, 28, 20],
+      "bbox_max": [82, 32, 22],
+      "lod0_tri_range": [208, 80],
+      "adjacent_face_ids": [],
+      "params": { "type": "OTHER", "sample_normal": [0, 0, 1] }
+    }
+  ]
+}

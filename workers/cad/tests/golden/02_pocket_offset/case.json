@@ -1,0 +1,11 @@
+{
+  "case": "02_pocket_offset",
+  "description": "centre pocket 50x30, depth 8.0 -> 10.5 (+2.5)",
+  "expect": {
+    "PLANAR_OFFSET": 1,
+    "offset_mm": -2.5,
+    "volume_delta_mm3": -3750.0
+  },
+  "volume_A_mm3": 108000.0,
+  "volume_B_mm3": 104250.0
+}

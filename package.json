@@ -1,0 +1,18 @@
+{
+  "name": "revgate",
+  "private": true,
+  "description": "RevGate monorepo - B-Rep revision diff & approval gate for machining outsourcing",
+  "packageManager": "pnpm@10.34.9",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "codegen": "pnpm --filter @revgate/contracts run codegen",
+    "contracts:check": "pnpm --filter @revgate/contracts run check",
+    "glb:validate": "node scripts/validate-glb.mjs"
+  },
+  "devDependencies": {
+    "gltf-validator": "2.0.0-dev.3.10"
+  }
+}

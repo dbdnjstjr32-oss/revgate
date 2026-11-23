@@ -1,0 +1,99 @@
+[
+  {
+    "name": "wrong schema_version",
+    "document": {
+      "schema_version": "2.0.0",
+      "revision_id": "r",
+      "source_unit": "MM",
+      "summary": { "bbox_min": [0, 0, 0], "bbox_max": [1, 1, 1], "volume_mm3": 1, "face_count": 0, "is_watertight": true, "warnings": [] },
+      "faces": []
+    }
+  },
+  {
+    "name": "unknown source_unit",
+    "document": {
+      "schema_version": "1.0.0",
+      "revision_id": "r",
+      "source_unit": "METRE",
+      "summary": { "bbox_min": [0, 0, 0], "bbox_max": [1, 1, 1], "volume_mm3": 1, "face_count": 0, "is_watertight": true, "warnings": [] },
+      "faces": []
+    }
+  },
+  {
+    "name": "Vec3 with 2 components",
+    "document": {
+      "schema_version": "1.0.0",
+      "revision_id": "r",
+      "source_unit": "MM",
+      "summary": { "bbox_min": [0, 0], "bbox_max": [1, 1, 1], "volume_mm3": 1, "face_count": 0, "is_watertight": true, "warnings": [] },
+      "faces": []
+    }
+  },
+  {
+    "name": "discriminator / payload mismatch (PLANE params carrying cylinder fields)",
+    "document": {
+      "schema_version": "1.0.0",
+      "revision_id": "r",
+      "source_unit": "MM",
+      "summary": { "bbox_min": [0, 0, 0], "bbox_max": [1, 1, 1], "volume_mm3": 1, "face_count": 1, "is_watertight": true, "warnings": [] },
+      "faces": [
+        {
+          "face_id": 0,
+          "surface_type": "CYLINDER",
+          "area_mm2": 1,
+          "centroid": [0, 0, 0],
+          "bbox_min": [0, 0, 0],
+          "bbox_max": [1, 1, 1],
+          "lod0_tri_range": [0, 1],
+          "adjacent_face_ids": [],
+          "params": { "type": "PLANE", "axis_origin": [0, 0, 0], "axis_dir": [0, 0, 1], "radius_mm": 1 }
+        }
+      ]
+    }
+  },
+  {
+    "name": "unknown params.type",
+    "document": {
+      "schema_version": "1.0.0",
+      "revision_id": "r",
+      "source_unit": "MM",
+      "summary": { "bbox_min": [0, 0, 0], "bbox_max": [1, 1, 1], "volume_mm3": 1, "face_count": 1, "is_watertight": true, "warnings": [] },
+      "faces": [
+        {
+          "face_id": 0,
+          "surface_type": "TORUS",
+          "area_mm2": 1,
+          "centroid": [0, 0, 0],
+          "bbox_min": [0, 0, 0],
+          "bbox_max": [1, 1, 1],
+          "lod0_tri_range": [0, 1],
+          "adjacent_face_ids": [],
+          "params": { "type": "TORUS", "sample_normal": [0, 0, 1] }
+        }
+      ]
+    }
+  },
+  {
+    "name": "negative face_id + extra property",
+    "document": {
+      "schema_version": "1.0.0",
+      "revision_id": "r",
+      "source_unit": "MM",
+      "summary": { "bbox_min": [0, 0, 0], "bbox_max": [1, 1, 1], "volume_mm3": 1, "face_count": 1, "is_watertight": true, "warnings": [] },
+      "faces": [
+        {
+          "face_id": -1,
+          "surface_type": "PLANE",
+          "area_mm2": 1,
+          "centroid": [0, 0, 0],
+          "bbox_min": [0, 0, 0],
+          "bbox_max": [1, 1, 1],
+          "lod0_tri_range": [0, 1],
+          "adjacent_face_ids": [],
+          "params": { "type": "PLANE", "origin": [0, 0, 0], "normal": [0, 0, 1] },
+          "color": "#ff0000"
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,307 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://revgate.io/schemas/analytical_meta/1.0.0/analytical_meta.schema.json",
+  "title": "AnalyticalMeta",
+  "description": "Per-revision analytical sidecar (IMPLEMENTATION_BLUEPRINT §2.2). One file per revision: analytical_meta.json. All lengths in mm (xstep.cascade.unit=MM), Z-up right-handed. face_id is the 0-based index of the face in TopTools_IndexedMapOfShape filled by TopExp.MapShapes_s(shape, TopAbs_FACE) (face_id = idx - 1). The same face_id is baked into every lod0/lod1 GLB vertex as the _FACE_ID attribute.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "revision_id",
+    "source_unit",
+    "summary",
+    "faces"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "revision_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_unit": {
+      "description": "Length unit declared by the source STEP file (geometry is always normalized to mm).",
+      "enum": [
+        "MM",
+        "INCH",
+        "UNKNOWN"
+      ]
+    },
+    "summary": {
+      "$ref": "#/$defs/MetaSummary"
+    },
+    "faces": {
+      "description": "Ordered by face_id (0..face_count-1).",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Face"
+      }
+    }
+  },
+  "$defs": {
+    "Vec3": {
+      "title": "Vec3",
+      "description": "[x, y, z] in mm (points) or unitless (unit directions).",
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "MetaSummary": {
+      "title": "MetaSummary",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bbox_min",
+        "bbox_max",
+        "volume_mm3",
+        "face_count",
+        "is_watertight",
+        "warnings"
+      ],
+      "properties": {
+        "bbox_min": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "bbox_max": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "volume_mm3": {
+          "type": "number",
+          "minimum": 0
+        },
+        "face_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "is_watertight": {
+          "type": "boolean"
+        },
+        "warnings": {
+          "description": "e.g. [\"OPEN_SHELL_ONLY\", \"INCH_SOURCE_CONVERTED\"] (see workers/cad/src/errors.py WARNINGS).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Face": {
+      "title": "Face",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "face_id",
+        "surface_type",
+        "area_mm2",
+        "centroid",
+        "bbox_min",
+        "bbox_max",
+        "lod0_tri_range",
+        "adjacent_face_ids",
+        "params"
+      ],
+      "properties": {
+        "face_id": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "surface_type": {
+          "enum": [
+            "PLANE",
+            "CYLINDER",
+            "CONE",
+            "SPHERE",
+            "TORUS",
+            "BSPLINE",
+            "OTHER"
+          ]
+        },
+        "area_mm2": {
+          "type": "number",
+          "minimum": 0
+        },
+        "centroid": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "bbox_min": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "bbox_max": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "lod0_tri_range": {
+          "description": "[start_tri, tri_count] into the single lod0.glb primitive index buffer.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "adjacent_face_ids": {
+          "description": "Faces sharing at least one edge (Attributed Adjacency Graph), ascending.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "uniqueItems": true
+        },
+        "params": {
+          "$ref": "#/$defs/FaceParams"
+        }
+      }
+    },
+    "FaceParams": {
+      "title": "FaceParams",
+      "description": "Discriminated union on `type`. SPHERE / TORUS / BSPLINE / OTHER surfaces use OtherParams.",
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/PlaneParams"
+        },
+        {
+          "$ref": "#/$defs/CylinderParams"
+        },
+        {
+          "$ref": "#/$defs/ConeParams"
+        },
+        {
+          "$ref": "#/$defs/OtherParams"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type"
+      }
+    },
+    "PlaneParams": {
+      "title": "PlaneParams",
+      "description": "`normal` is the outward unit normal (TopAbs_REVERSED face orientation already applied); `origin` is the face centroid projected onto the plane.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "origin",
+        "normal"
+      ],
+      "properties": {
+        "type": {
+          "const": "PLANE"
+        },
+        "origin": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "normal": {
+          "$ref": "#/$defs/Vec3"
+        }
+      }
+    },
+    "CylinderParams": {
+      "title": "CylinderParams",
+      "description": "`axis_origin` is the point on the axis at mid-height of the face; `axis_dir` is a unit vector (sign canonicalized).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "axis_origin",
+        "axis_dir",
+        "radius_mm",
+        "height_mm",
+        "sweep_deg",
+        "is_internal"
+      ],
+      "properties": {
+        "type": {
+          "const": "CYLINDER"
+        },
+        "axis_origin": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "axis_dir": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "radius_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "height_mm": {
+          "type": "number",
+          "minimum": 0
+        },
+        "sweep_deg": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 360
+        },
+        "is_internal": {
+          "description": "true = concave (hole), false = convex (boss/shaft).",
+          "type": "boolean"
+        }
+      }
+    },
+    "ConeParams": {
+      "title": "ConeParams",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "axis_origin",
+        "axis_dir",
+        "half_angle_deg",
+        "r_min",
+        "r_max",
+        "is_internal"
+      ],
+      "properties": {
+        "type": {
+          "const": "CONE"
+        },
+        "axis_origin": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "axis_dir": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "half_angle_deg": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 90
+        },
+        "r_min": {
+          "type": "number",
+          "minimum": 0
+        },
+        "r_max": {
+          "type": "number",
+          "minimum": 0
+        },
+        "is_internal": {
+          "type": "boolean"
+        }
+      }
+    },
+    "OtherParams": {
+      "title": "OtherParams",
+      "description": "`sample_normal` is an outward unit normal sampled on the face (orientation applied).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "sample_normal"
+      ],
+      "properties": {
+        "type": {
+          "const": "OTHER"
+        },
+        "sample_normal": {
+          "$ref": "#/$defs/Vec3"
+        }
+      }
+    }
+  }
+}

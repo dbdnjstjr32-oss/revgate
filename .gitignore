@@ -1,0 +1,27 @@
+# --- Node / pnpm ---
+node_modules/
+.pnpm-store/
+*.tsbuildinfo
+.next/
+dist/
+
+# --- Python / uv ---
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# --- RevGate local artifacts ---
+.env
+workers/cad/tests/.artifacts/
+workers/cad/out/
+*.brep
+
+# --- OS / editors ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

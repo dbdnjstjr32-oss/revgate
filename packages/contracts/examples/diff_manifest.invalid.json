@@ -1,0 +1,123 @@
+[
+  {
+    "name": "transform_4x4 with 15 numbers",
+    "document": {
+      "schema_version": "1.0.0",
+      "diff_run_id": "d",
+      "base_revision_id": "a",
+      "target_revision_id": "b",
+      "alignment": { "method": "IDENTITY", "transform_4x4": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0], "confidence": 1, "rms_error_mm": 0, "requires_manual_review": false },
+      "summary": { "geometry_identical": true, "total_changes": 0, "volume_delta_mm3": 0, "boolean_status": "SKIPPED" },
+      "face_status_map": { "base": { "unchanged": [], "modified": [], "removed": [] }, "target": { "unchanged": [], "modified": [], "added": [] } },
+      "changes": [],
+      "artifacts": { "delta_added_glb": null, "delta_removed_glb": null }
+    }
+  },
+  {
+    "name": "confidence above 1",
+    "document": {
+      "schema_version": "1.0.0",
+      "diff_run_id": "d",
+      "base_revision_id": "a",
+      "target_revision_id": "b",
+      "alignment": { "method": "IDENTITY", "transform_4x4": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], "confidence": 1.2, "rms_error_mm": 0, "requires_manual_review": false },
+      "summary": { "geometry_identical": true, "total_changes": 0, "volume_delta_mm3": 0, "boolean_status": "SKIPPED" },
+      "face_status_map": { "base": { "unchanged": [], "modified": [], "removed": [] }, "target": { "unchanged": [], "modified": [], "added": [] } },
+      "changes": [],
+      "artifacts": { "delta_added_glb": null, "delta_removed_glb": null }
+    }
+  },
+  {
+    "name": "unknown change category",
+    "document": {
+      "schema_version": "1.0.0",
+      "diff_run_id": "d",
+      "base_revision_id": "a",
+      "target_revision_id": "b",
+      "alignment": { "method": "IDENTITY", "transform_4x4": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], "confidence": 1, "rms_error_mm": 0, "requires_manual_review": false },
+      "summary": { "geometry_identical": false, "total_changes": 1, "volume_delta_mm3": 0, "boolean_status": "OK" },
+      "face_status_map": { "base": { "unchanged": [], "modified": [], "removed": [] }, "target": { "unchanged": [], "modified": [], "added": [] } },
+      "changes": [
+        {
+          "change_id": "c1",
+          "category": "FILLET_RADIUS",
+          "severity": "INFO",
+          "title": "t",
+          "fact": {},
+          "base_face_ids": [],
+          "target_face_ids": [],
+          "anchor_xyz": [0, 0, 0],
+          "camera_focus": { "target": [0, 0, 0], "suggested_dir": [0, 0, 1], "radius_mm": 1 }
+        }
+      ],
+      "artifacts": { "delta_added_glb": null, "delta_removed_glb": null }
+    }
+  },
+  {
+    "name": "fact value that is neither number nor string",
+    "document": {
+      "schema_version": "1.0.0",
+      "diff_run_id": "d",
+      "base_revision_id": "a",
+      "target_revision_id": "b",
+      "alignment": { "method": "MANUAL_321", "transform_4x4": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], "confidence": 1, "rms_error_mm": 0, "requires_manual_review": false },
+      "summary": { "geometry_identical": false, "total_changes": 1, "volume_delta_mm3": 0, "boolean_status": "OK" },
+      "face_status_map": { "base": { "unchanged": [], "modified": [], "removed": [] }, "target": { "unchanged": [], "modified": [], "added": [] } },
+      "changes": [
+        {
+          "change_id": "c1",
+          "category": "HOLE_DIAMETER",
+          "severity": "MAJOR",
+          "title": "t",
+          "fact": { "from_diameter_mm": [3.3] },
+          "base_face_ids": [],
+          "target_face_ids": [],
+          "anchor_xyz": [0, 0, 0],
+          "camera_focus": { "target": [0, 0, 0], "suggested_dir": [0, 0, 1], "radius_mm": 1 }
+        }
+      ],
+      "artifacts": { "delta_added_glb": null, "delta_removed_glb": null }
+    }
+  },
+  {
+    "name": "artifacts key missing (null required, not optional)",
+    "document": {
+      "schema_version": "1.0.0",
+      "diff_run_id": "d",
+      "base_revision_id": "a",
+      "target_revision_id": "b",
+      "alignment": { "method": "IDENTITY", "transform_4x4": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], "confidence": 1, "rms_error_mm": 0, "requires_manual_review": false },
+      "summary": { "geometry_identical": true, "total_changes": 0, "volume_delta_mm3": 0, "boolean_status": "SKIPPED" },
+      "face_status_map": { "base": { "unchanged": [], "modified": [], "removed": [] }, "target": { "unchanged": [], "modified": [], "added": [] } },
+      "changes": [],
+      "artifacts": { "delta_added_glb": null }
+    }
+  },
+  {
+    "name": "engineering_hint with unknown confidence",
+    "document": {
+      "schema_version": "1.0.0",
+      "diff_run_id": "d",
+      "base_revision_id": "a",
+      "target_revision_id": "b",
+      "alignment": { "method": "IDENTITY", "transform_4x4": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], "confidence": 1, "rms_error_mm": 0, "requires_manual_review": false },
+      "summary": { "geometry_identical": false, "total_changes": 1, "volume_delta_mm3": 0, "boolean_status": "OK" },
+      "face_status_map": { "base": { "unchanged": [], "modified": [], "removed": [] }, "target": { "unchanged": [], "modified": [], "added": [] } },
+      "changes": [
+        {
+          "change_id": "c1",
+          "category": "HOLE_DIAMETER",
+          "severity": "MAJOR",
+          "title": "t",
+          "fact": {},
+          "engineering_hint": { "text": "x", "confidence": "MEDIUM" },
+          "base_face_ids": [],
+          "target_face_ids": [],
+          "anchor_xyz": [0, 0, 0],
+          "camera_focus": { "target": [0, 0, 0], "suggested_dir": [0, 0, 1], "radius_mm": 1 }
+        }
+      ],
+      "artifacts": { "delta_added_glb": null, "delta_removed_glb": null }
+    }
+  }
+]

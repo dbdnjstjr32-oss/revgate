@@ -1,0 +1,11 @@
+{
+  "case": "04_thin_wall",
+  "description": "pocket outer wall thickness 2.5 -> 0.8 mm",
+  "expect": {
+    "WALL_THICKNESS": "CRITICAL",
+    "from_mm": 2.5,
+    "to_mm": 0.8
+  },
+  "volume_A_mm3": 111000.0,
+  "volume_B_mm3": 110592.0
+}

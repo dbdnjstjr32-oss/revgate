@@ -1,0 +1,27 @@
+{
+  "name": "@revgate/contracts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "RevGate SSOT data contracts: JSON Schema -> TypeScript types + Pydantic v2 models",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./ts/index.ts",
+      "default": "./ts/index.ts"
+    },
+    "./schemas/*": "./schemas/*"
+  },
+  "files": [
+    "schemas",
+    "ts"
+  ],
+  "scripts": {
+    "codegen": "node scripts/codegen.mjs",
+    "check": "node scripts/codegen.mjs --check"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0",
+    "json-schema-to-typescript": "16.0.0",
+    "typescript": "5.9.3"
+  }
+}

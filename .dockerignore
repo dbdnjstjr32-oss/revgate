@@ -1,0 +1,13 @@
+# Build context = repo root (infra/docker-compose.yml -> context: ..)
+.git
+**/node_modules
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/*.pyc
+**/.next
+docs
+apps
+infra
+workers/cad/tests/.artifacts
+workers/cad/out

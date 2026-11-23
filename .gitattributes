@@ -1,0 +1,12 @@
+* text=auto eol=lf
+
+# Shell scripts executed inside Linux containers must keep LF endings.
+*.sh text eol=lf
+Makefile text eol=lf
+Dockerfile text eol=lf
+
+# CAD / 3D fixtures are byte-exact (SHA-256 hash-verified re-drop relies on it).
+*.step binary
+*.stp binary
+*.glb binary
+*.brep binary

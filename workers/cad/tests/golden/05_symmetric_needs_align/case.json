@@ -1,0 +1,10 @@
+{
+  "case": "05_symmetric_needs_align",
+  "description": "symmetric 50^3 cube; 4 side faces get 24x24x10 pockets (matching area 33% < 40%)",
+  "expect": {
+    "status": "NEEDS_ALIGN",
+    "confidence_max": 0.4
+  },
+  "volume_A_mm3": 125000.0,
+  "volume_B_mm3": 101960.0
+}

@@ -1,0 +1,16 @@
+[project]
+name = "revgate-contracts"
+version = "1.0.0"
+description = "RevGate SSOT data contracts - Pydantic v2 models generated from packages/contracts/schemas (do not edit by hand)"
+requires-python = ">=3.11"
+dependencies = ["pydantic>=2.7,<3", "typing-extensions>=4.12"]
+
+[dependency-groups]
+dev = ["jsonschema>=4.23"]
+
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["revgate_contracts"]

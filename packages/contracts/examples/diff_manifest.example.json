@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0.0",
+  "diff_run_id": "diff_0192f3c4-a1b2-7c3d-8e4f-0000000000aa",
+  "base_revision_id": "rev_0192f3c4-a1b2-7c3d-8e4f-000000000001",
+  "target_revision_id": "rev_0192f3c4-a1b2-7c3d-8e4f-000000000002",
+  "alignment": {
+    "method": "AUTO_BREP_RANSAC",
+    "transform_4x4": [0.7986, 0.6018, 0, -60.71, 0, 0, 1, -80, 0.6018, -0.7986, 0, -108.15, 0, 0, 0, 1],
+    "confidence": 0.978,
+    "rms_error_mm": 0.0000012,
+    "requires_manual_review": false
+  },
+  "summary": {
+    "geometry_identical": false,
+    "total_changes": 1,
+    "volume_delta_mm3": -106.03,
+    "boolean_status": "OK"
+  },
+  "face_status_map": {
+    "base": { "unchanged": [0, 1, 2, 3, 4, 5, 6, 8], "modified": [7], "removed": [] },
+    "target": { "unchanged": [0, 1, 2, 3, 4, 5, 6, 8], "modified": [7], "added": [] }
+  },
+  "changes": [
+    {
+      "change_id": "chg_3f2a9c0d1e7b",
+      "category": "HOLE_DIAMETER",
+      "severity": "MAJOR",
+      "title": "홀 지름 변경: Ø3.30 → Ø4.20 (+0.90mm)",
+      "fact": {
+        "feature": "HOLE",
+        "from_diameter_mm": 3.3,
+        "to_diameter_mm": 4.2,
+        "delta_mm": 0.9,
+        "depth_mm": 20
+      },
+      "engineering_hint": { "text": "참고 추정: ISO M4 → M5 탭 기초홀 규격과 일치", "confidence": "HIGH" },
+      "base_face_ids": [7],
+      "target_face_ids": [7],
+      "anchor_xyz": [88, 12, 20],
+      "camera_focus": { "target": [88, 12, 20], "suggested_dir": [0, 0, 1], "radius_mm": 12.6 }
+    }
+  ],
+  "artifacts": { "delta_added_glb": null, "delta_removed_glb": "delta_removed.glb" }
+}
