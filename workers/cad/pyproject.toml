@@ -11,6 +11,12 @@ dependencies = [
   "scipy>=1.13,<2",
   "pygltflib==1.16.5",
   "revgate-contracts",
+  # queue runtime (q-ingest / q-diff-batch / q-diff-interactive / q-purge)
+  "arq==0.28.0",
+  "redis>=5.2,<6",
+  "asyncpg>=0.30,<1",
+  "boto3>=1.40,<2",
+  "brotli>=1.1,<2",
 ]
 
 [dependency-groups]

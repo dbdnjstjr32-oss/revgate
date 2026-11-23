@@ -1,0 +1,45 @@
+[project]
+name = "revgate-api"
+version = "0.1.0"
+description = "RevGate API - FastAPI + SQLAlchemy 2.0 (asyncpg) + Alembic + ARQ client + WeasyPrint"
+readme = "README.md"
+# Same interpreter as workers/cad so packages/contracts/py is shared as-is.
+requires-python = ">=3.11,<3.12"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "uvicorn[standard]>=0.30,<1",
+  "sqlalchemy[asyncio]>=2.0.58,<2.1",
+  "asyncpg>=0.30,<1",
+  "alembic>=1.14,<2",
+  "pydantic>=2.9,<3",
+  "pydantic-settings>=2.6,<3",
+  "boto3>=1.40,<2",
+  "redis>=5.2,<6",
+  "arq==0.28.0",
+  "brotli>=1.1,<2",
+  "weasyprint>=63,<71",
+  "jinja2>=3.1,<4",
+  "tzdata>=2024.1",
+  "revgate-contracts",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.3",
+  "httpx>=0.28,<1",
+  "psycopg[binary]>=3.2,<4",
+  "pypdf>=5,<8",
+  "jsonschema>=4.23",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+revgate-contracts = { path = "../../packages/contracts/py", editable = true }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra --strict-markers"
+markers = ["e2e: end-to-end against the running stack (api + cad-worker + postgres + redis + minio)"]

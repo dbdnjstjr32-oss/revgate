@@ -4,13 +4,24 @@
 #   docker compose -f infra/docker-compose.yml run --rm cad-worker pytest
 #
 # - postgres / redis / minio run in Docker; apps/api and apps/web run on the host for fast HMR.
-# - cad-worker sits behind the "cad" profile: Phase 1 ships the 1-Job-1-Subprocess engine + CLI,
-#   the long-running ARQ entrypoint (q-ingest / q-diff-*) lands with the API phase.
+# Profiles: (none) = infra only (make dev) | app = + api + cad-worker (ARQ) | test = + api-tests runner
+#   cad = cad-worker alone (make test-cad).
 name: revgate
 
 x-minio-credentials: &minio-credentials
   MINIO_ROOT_USER: ${MINIO_ROOT_USER:-revgate}
   MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-revgate-dev-secret}
+
+# Shared by api / cad-worker / api-tests.
+x-app-env: &app-env
+  REVGATE_ENV: dev
+  REDIS_URL: redis://redis:6379/0
+  S3_ENDPOINT_URL: http://minio:9000
+  S3_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-revgate}
+  S3_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-revgate-dev-secret}
+  S3_REGION: us-east-1
+  APP_DB_ROLE: revgate_app
+  APP_DB_PASSWORD: ${APP_DB_PASSWORD:-revgate_app_dev}
 
 services:
   postgres:
@@ -84,13 +95,56 @@ services:
       - ./minio-init.sh:/init/minio-init.sh:ro
     restart: "no"
 
+  # FastAPI + Alembic. The entrypoint migrates as the schema owner, then serves as revgate_app.
+  # Host-run alternative (HMR): see README "API on the host".
+  api:
+    profiles: ["app", "test"]
+    platform: linux/amd64
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    image: revgate/api:dev
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      minio: { condition: service_healthy }
+      minio-init: { condition: service_completed_successfully }
+    environment:
+      <<: *app-env
+      MIGRATION_DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-revgate}:${POSTGRES_PASSWORD:-revgate}@postgres:5432/${POSTGRES_DB:-revgate}
+      DATABASE_URL: postgresql+asyncpg://revgate_app:${APP_DB_PASSWORD:-revgate_app_dev}@postgres:5432/${POSTGRES_DB:-revgate}
+      # Signed URLs must be reachable by the *client* (browser / e2e runner): localhost:9000.
+      S3_PUBLIC_ENDPOINT_URL: ${S3_PUBLIC_ENDPOINT_URL:-http://localhost:9000}
+      WEB_BASE_URL: ${WEB_ORIGIN:-http://localhost:3000}
+      API_BASE_URL: http://localhost:8000
+      COOKIE_SECURE: "true"
+      AUDIT_LOCK_MODE: GOVERNANCE
+      AUDIT_RETENTION_DAYS: "1"   # dev: short GOVERNANCE retention; prod: COMPLIANCE, years
+    ports:
+      - "${API_PORT:-8000}:8000"
+    volumes:
+      - ../apps/api:/app/apps/api
+      - ../packages/contracts:/app/packages/contracts
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health', timeout=3).status == 200 else 1)"]
+      interval: 3s
+      timeout: 5s
+      retries: 40
+    restart: unless-stopped
+
+  # ARQ worker (q-ingest / q-diff-batch / q-diff-interactive / q-purge) over the 1-Job-1-Subprocess engine.
   cad-worker:
-    profiles: ["cad"]
+    profiles: ["app", "cad", "test"]
     platform: linux/amd64
     build:
       context: ..
       dockerfile: workers/cad/Dockerfile
     image: revgate/cad-worker:dev
+    command: ["python", "-m", "src.worker"]
+    depends_on:
+      postgres: { condition: service_healthy, required: false }
+      redis: { condition: service_healthy, required: false }
+      minio: { condition: service_healthy, required: false }
     # 1-Job-1-Subprocess scratch lives on RAM only (Mode B zero-retention friendly).
     tmpfs:
       - /tmp/revgate_scratch:size=1G
@@ -99,15 +153,36 @@ services:
     # instead of being OOM-killed (-9 -> OOM_KILLED). Equal values = hard 2g limit.
     memswap_limit: 2g
     environment:
+      <<: *app-env
       REVGATE_SCRATCH_DIR: /tmp/revgate_scratch
-      REDIS_URL: redis://redis:6379/0
-      S3_ENDPOINT_URL: http://minio:9000
-      S3_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-revgate}
-      S3_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-revgate-dev-secret}
+      REVGATE_DB_DSN: postgresql://revgate_app:${APP_DB_PASSWORD:-revgate_app_dev}@postgres:5432/${POSTGRES_DB:-revgate}
     volumes:
       # Dev bind mounts: edit on the host, run inside linux/amd64 (deps stay in /opt/venv).
       - ../workers/cad:/app/workers/cad
       - ../packages/contracts:/app/packages/contracts
+    restart: unless-stopped
+
+  # End-to-end runner: shares MinIO's network namespace so the signed URLs the API hands out
+  # (http://localhost:9000/...) resolve to MinIO exactly as they do for a browser on the host.
+  api-tests:
+    profiles: ["test"]
+    image: revgate/api:dev
+    network_mode: "service:minio"
+    depends_on:
+      api: { condition: service_healthy }
+      cad-worker: { condition: service_started }
+    environment:
+      <<: *app-env
+      E2E_API_URL: http://api:8000
+      E2E_DB_DSN: postgresql://${POSTGRES_USER:-revgate}:${POSTGRES_PASSWORD:-revgate}@postgres:5432/${POSTGRES_DB:-revgate}
+      E2E_APP_DB_DSN: postgresql://revgate_app:${APP_DB_PASSWORD:-revgate_app_dev}@postgres:5432/${POSTGRES_DB:-revgate}
+      MIGRATION_DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-revgate}:${POSTGRES_PASSWORD:-revgate}@postgres:5432/${POSTGRES_DB:-revgate}
+      E2E_GOLDEN_DIR: /golden
+    volumes:
+      - ../apps/api:/app/apps/api
+      - ../packages/contracts:/app/packages/contracts
+      - ../workers/cad/tests/golden:/golden:ro
+    command: ["pytest", "-q"]
 
 volumes:
   pgdata: {}

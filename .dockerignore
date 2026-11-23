@@ -7,7 +7,7 @@
 **/*.pyc
 **/.next
 docs
-apps
+
 infra
 workers/cad/tests/.artifacts
 workers/cad/out
