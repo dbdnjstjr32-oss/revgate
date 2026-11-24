@@ -181,6 +181,14 @@ async def create_link(diff_id: UUID, body: LinkIn, request: Request, cu: Current
     return {"link_id": str(link.id), "share_url": f"{settings.web_base_url}/r/{token}", "link": S.link(link)}
 
 
+@router.get("/diffs/{diff_id}/links")
+async def list_links(diff_id: UUID, cu: CurrentUser = Depends(current_user), db: AsyncSession = Depends(get_db)):
+    """Phase 3 read model: share links of a diff run (tokens are never stored, so no URLs here)."""
+    run, _p = await run_for_user(db, diff_id, cu)
+    links = (await db.execute(select(ReviewLink).where(ReviewLink.diff_run_id == run.id).order_by(ReviewLink.created_at.desc()))).scalars()
+    return {"items": [S.link(l) for l in links]}
+
+
 async def _link_for_user(db: AsyncSession, link_id: UUID, cu: CurrentUser) -> tuple[ReviewLink, Part]:
     link = await db.get(ReviewLink, link_id)
     if link is None:

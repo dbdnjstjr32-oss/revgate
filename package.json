@@ -10,9 +10,15 @@
   "scripts": {
     "codegen": "pnpm --filter @revgate/contracts run codegen",
     "contracts:check": "pnpm --filter @revgate/contracts run check",
-    "glb:validate": "node scripts/validate-glb.mjs"
+    "glb:validate": "node scripts/validate-glb.mjs",
+    "web:dev": "pnpm --filter @revgate/web dev"
   },
   "devDependencies": {
     "gltf-validator": "2.0.0-dev.3.10"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

@@ -6,7 +6,7 @@ import math
 from typing import Any, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from .security import EMAIL_RE, SHA256_RE
 
@@ -123,3 +123,15 @@ class SubmissionPresignIn(BaseModel):
 class SubmissionCompleteIn(BaseModel):
     submission_id: UUID
     spec_card_json: dict[str, Any] | None = None
+
+
+class WorkspaceSettingsIn(BaseModel):
+    security_mode: Literal["TTL_VAULT", "ZERO_RETENTION"] | None = None
+    # product spec §4: Mode A keeps raw STEP for 30~90 days
+    retention_days: int | None = Field(default=None, ge=30, le=90)
+
+    @model_validator(mode="after")
+    def _not_empty(self) -> "WorkspaceSettingsIn":
+        if self.security_mode is None and self.retention_days is None:
+            raise ValueError("provide security_mode and/or retention_days")
+        return self

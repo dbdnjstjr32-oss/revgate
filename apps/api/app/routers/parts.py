@@ -23,7 +23,7 @@ from ..config import Settings
 from ..deps import CurrentUser, current_user, get_arq, get_db, get_redis, get_settings_dep, get_storage, part_for_user
 from ..errors import ApiError, not_found
 from ..ids import uuid7
-from ..models import Part, Revision
+from ..models import DiffRun, Part, Revision
 from ..queue import enqueue_ingest
 from ..schemas import CompleteIn, PartIn, PresignIn
 from ..storage import Storage, raw_key
@@ -76,6 +76,15 @@ async def create_part(body: PartIn, request: Request, cu: CurrentUser = Depends(
 async def list_parts(cu: CurrentUser = Depends(current_user), db: AsyncSession = Depends(get_db)):
     rows = (await db.execute(select(Part).where(Part.workspace_id == cu.workspace.id).order_by(Part.created_at.desc()))).scalars()
     return {"items": [S.part(p) for p in rows]}
+
+
+@router.get("/parts/{part_id}")
+async def get_part(part_id: UUID, cu: CurrentUser = Depends(current_user), db: AsyncSession = Depends(get_db)):
+    """Phase 3 read model for the web app: the part with its revisions and diff runs (newest first)."""
+    p = await part_for_user(db, part_id, cu)
+    revs = (await db.execute(select(Revision).where(Revision.part_id == p.id).order_by(Revision.created_at.desc()))).scalars()
+    runs = (await db.execute(select(DiffRun).where(DiffRun.part_id == p.id).order_by(DiffRun.created_at.desc()))).scalars()
+    return {"part": S.part(p), "revisions": [S.revision(r) for r in revs], "diff_runs": [S.diff_run(d) for d in runs]}
 
 
 @router.post("/parts/{part_id}/revisions/presign")

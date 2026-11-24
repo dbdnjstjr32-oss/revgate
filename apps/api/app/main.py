@@ -14,7 +14,7 @@ from .config import get_settings
 from .db import make_engine, make_sessionmaker
 from .errors import ApiError, api_error_handler
 from .queue import make_pool
-from .routers import auth, diffs, parts, public, review, shop
+from .routers import auth, dev, diffs, parts, public, review, shop, workspace
 from .storage import Storage
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -44,8 +44,10 @@ def create_app() -> FastAPI:
     app.add_middleware(CORSMiddleware, allow_origins=[settings.web_base_url], allow_credentials=True,
                        allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"], allow_headers=["*"])
     app.add_exception_handler(ApiError, api_error_handler)
-    for r in (auth.router, parts.router, diffs.router, public.router, review.router, shop.router):
+    for r in (auth.router, workspace.router, parts.router, diffs.router, public.router, review.router, shop.router):
         app.include_router(r)
+    if settings.env != "prod" and settings.dev_outbox:
+        app.include_router(dev.router)  # local-development hook only
 
     @app.get("/health", tags=["ops"])
     async def health(request: Request):

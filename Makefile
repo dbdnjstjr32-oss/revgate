@@ -4,6 +4,7 @@
 #   make codegen   JSON Schema SSOT -> TypeScript + Pydantic v2 (+ verification)
 #   make test-cad  golden STEP suite inside the linux/amd64 CAD worker
 #   make test-api  end-to-end suite against the running stack (real Postgres/Redis/MinIO/worker)
+#   make test-web  apps/web typecheck + lint + Vitest + next build + Playwright full-stack browser E2E
 # Override tools when needed, e.g. from WSL without Docker integration: make stack DOCKER=docker.exe
 
 .DEFAULT_GOAL := help
@@ -17,7 +18,7 @@ APP     := $(COMPOSE) --profile app
 TEST    := $(COMPOSE) --profile test
 
 .PHONY: help install dev stack down infra-status logs codegen contracts-check cad-build api-build golden migrate \
-        test-cad test-api test glb-validate clean
+        test-cad test-api web-check test-web test glb-validate clean
 
 help: ## List targets
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z0-9_-]+:.*## / {printf "  %-16s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -76,7 +77,17 @@ test-api: api-build cad-build ## E2E: real api + ARQ cad-worker + Postgres + Red
 	$(TEST) up -d cad-worker
 	$(TEST) run --rm api-tests pytest -q
 
-test: test-cad test-api ## Both suites
+web-check: install ## apps/web: tsc --noEmit, ESLint (0 warnings), Vitest (measure / datum / LUT), next build
+	$(PNPM) --filter @revgate/web typecheck
+	$(PNPM) --filter @revgate/web lint
+	$(PNPM) --filter @revgate/web test
+	$(PNPM) --filter @revgate/web build
+
+test-web: stack web-check ## Browser E2E: Chromium (SwiftShader WebGL2) -> next start -> api + cad-worker + Postgres/Redis/MinIO (no mocks)
+	$(PNPM) --filter @revgate/web exec playwright install chromium
+	$(PNPM) --filter @revgate/web exec playwright test
+
+test: test-cad test-api test-web ## All suites (CAD engine, API E2E, web + browser E2E)
 
 glb-validate: install ## Run the Khronos glTF validator on GLBs kept by `make test-cad` (REVGATE_TEST_ARTIFACTS)
 	$(CAD) run --rm --no-deps -e REVGATE_TEST_ARTIFACTS=/app/workers/cad/tests/.artifacts cad-worker pytest -q -k "golden or ingest"

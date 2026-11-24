@@ -130,6 +130,9 @@ def test_share_otp_pins_approve_pdf(http, redis, db, s3, hole_diff):
     assert {r[0] for r in q(db, "SELECT action FROM audit_events WHERE entity_id IN (%s, %s, %s)",
                              item["id"], pin["id"], internal_pin["id"])} == {"DIFF_ITEM_CHECKED", "PIN_CREATED", "PIN_RESOLVED"}
 
+    listed = {l["id"]: l["status"] for l in http.get(f"/v1/diffs/{diff_id}/links", headers=H(s)).json()["items"]}
+    assert listed[link_id] == "APPROVED" and listed[other_link] == "ACTIVE"
+
     # revoke the second link -> terminal
     assert http.delete(f"/v1/links/{other_link}", headers=H(s)).json()["status"] == "REVOKED"
     assert http.post(f"/v1/public/links/{other_token}/otp/request").json()["error"]["code"] == "LINK_REVOKED"

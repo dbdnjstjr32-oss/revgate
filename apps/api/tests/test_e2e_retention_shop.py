@@ -35,8 +35,8 @@ def _gone(s3, key: str) -> bool:
 
 def test_zero_retention_purge_and_hash_verified_redrop(http, redis, db, s3):
     s = login(http, redis)
-    # The 11-table API has no workspace-settings endpoint yet: switch the mode as an operator would.
-    q(db, "UPDATE workspaces SET security_mode = 'ZERO_RETENTION' WHERE id = %s", s["workspace"]["id"])
+    r = http.patch("/v1/workspace/settings", headers=H(s), json={"security_mode": "ZERO_RETENTION"})
+    assert r.status_code == 200 and r.json()["workspace"]["security_mode"] == "ZERO_RETENTION"
     part = make_part(http, s)
     path_a, path_b = golden("01_hole_diam", "A"), golden("01_hole_diam", "B")
     a = upload_revision(http, s, part["id"], path_a, "A")

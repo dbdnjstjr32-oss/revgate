@@ -29,8 +29,15 @@ BLUEPRINT_S4 = {
 }
 
 
+# Phase 3 additions (web app needs): OWNER settings, read models, dev-only outbox helper.
+PHASE3 = {
+    ("PATCH", "/v1/workspace/settings"), ("GET", "/v1/parts/{part_id}"), ("GET", "/v1/diffs/{diff_id}/links"),
+}
+DEV_ONLY = {("GET", "/v1/dev/outbox")}  # not registered when REVGATE_ENV=prod
+
+
 def test_openapi_matches_blueprint_section_4(http):
     spec = http.get("/openapi.json").json()
     exposed = {(m.upper(), p) for p, ops in spec["paths"].items() for m in ops}
     assert len(BLUEPRINT_S4) == 29
-    assert exposed == BLUEPRINT_S4 | {("GET", "/health")}
+    assert exposed == BLUEPRINT_S4 | PHASE3 | DEV_ONLY | {("GET", "/health")}
