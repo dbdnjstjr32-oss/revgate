@@ -33,6 +33,11 @@ BLUEPRINT_S4 = {
 PHASE3 = {
     ("PATCH", "/v1/workspace/settings"), ("GET", "/v1/parts/{part_id}"), ("GET", "/v1/diffs/{diff_id}/links"),
 }
+# Phase 4 (docs/PHASE4_MANUFACTURING_SPEC.md §4.1): SpecCardV2 edits + 2D drawing attachments.
+PHASE4 = {
+    ("PATCH", "/v1/revisions/{rev_id}/spec"), ("POST", "/v1/revisions/{rev_id}/attachments/presign"),
+    ("POST", "/v1/revisions/{rev_id}/attachments/{att_id}/complete"), ("DELETE", "/v1/revisions/{rev_id}/attachments/{att_id}"),
+}
 DEV_ONLY = {("GET", "/v1/dev/outbox")}  # not registered when REVGATE_ENV=prod
 
 
@@ -40,4 +45,5 @@ def test_openapi_matches_blueprint_section_4(http):
     spec = http.get("/openapi.json").json()
     exposed = {(m.upper(), p) for p, ops in spec["paths"].items() for m in ops}
     assert len(BLUEPRINT_S4) == 29
-    assert exposed == BLUEPRINT_S4 | PHASE3 | DEV_ONLY | {("GET", "/health")}
+    assert len(PHASE4) == 4
+    assert exposed == BLUEPRINT_S4 | PHASE3 | PHASE4 | DEV_ONLY | {("GET", "/health")}

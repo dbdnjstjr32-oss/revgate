@@ -41,13 +41,13 @@ export function ChangeList({ items, changes, selectedKey, onSelect, onToggle, ca
                 <input
                   data-testid="change-check"
                   type="checkbox"
-                  className="mt-1 h-4 w-4 accent-indigo-600"
+                  className="mt-0.5 h-6 w-6 shrink-0 accent-indigo-600 p-2"
                   checked={it.checked}
                   disabled={!canCheck}
                   onChange={(e) => onToggle(it, e.target.checked)}
                   aria-label="변경점 확인"
                 />
-                <button type="button" className="flex-1 text-left" onClick={() => onSelect(it.change_key)}>
+                <button type="button" className="min-h-[44px] flex-1 text-left" onClick={() => onSelect(it.change_key)}>
                   <div className="flex flex-wrap items-center gap-1.5">
                     <span className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${SEVERITY_STYLE[it.severity]}`}>{it.severity}</span>
                     <span className="rounded bg-slate-900 px-1.5 py-0.5 text-[10px] font-bold text-white">확정</span>

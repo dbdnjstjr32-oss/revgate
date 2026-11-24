@@ -1,0 +1,766 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://revgate.io/schemas/manufacturing/1.0.0/manufacturing.schema.json",
+  "title": "ApprovalSnapshot",
+  "description": "Phase 4 (docs/PHASE4_MANUFACTURING_SPEC.md §2.1): immutable production-approval snapshot stored in review_links.approval_snapshot_json; approval_snapshot_sha256 = sha256(json.dumps(snapshot, sort_keys=True, separators=(\",\", \":\"))). The $defs are the Phase 4 manufacturing contracts shared by apps/api and apps/web: SpecCardV2 (§3), SpecDiffItem (§3.1), MissingSpecWarning (§3.2), AttachmentItem (§4).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "snapshot_version",
+    "approved_at",
+    "approver",
+    "part",
+    "base_rev",
+    "target_rev",
+    "diff_run",
+    "spec_diffs",
+    "geometry_changes",
+    "dfm_ack",
+    "missing_spec_warnings_acked",
+    "unresolved_pin_count"
+  ],
+  "properties": {
+    "snapshot_version": {
+      "const": "1.0"
+    },
+    "approved_at": {
+      "description": "UTC ISO-8601 timestamp of the approval transaction.",
+      "type": "string",
+      "minLength": 20
+    },
+    "approver": {
+      "$ref": "#/$defs/SnapshotApprover"
+    },
+    "part": {
+      "$ref": "#/$defs/SnapshotPart"
+    },
+    "base_rev": {
+      "$ref": "#/$defs/SnapshotRevision"
+    },
+    "target_rev": {
+      "$ref": "#/$defs/SnapshotRevision"
+    },
+    "diff_run": {
+      "$ref": "#/$defs/SnapshotDiffRun"
+    },
+    "spec_diffs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/SpecDiffItem"
+      }
+    },
+    "geometry_changes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/GeometryChange"
+      }
+    },
+    "dfm_ack": {
+      "$ref": "#/$defs/DfmAck"
+    },
+    "missing_spec_warnings_acked": {
+      "description": "Missing-spec warning codes the approver explicitly acknowledged (unique, sorted).",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/WarningCode"
+      }
+    },
+    "unresolved_pin_count": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "$defs": {
+    "Sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "WarningCode": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]*$"
+    },
+    "ManufacturingProcess": {
+      "enum": [
+        "CNC_MILLING",
+        "CNC_TURNING",
+        "PRINT_FDM",
+        "PRINT_SLA_SLS_MJF",
+        "SHEET_METAL",
+        "OTHER"
+      ]
+    },
+    "AttachmentKind": {
+      "enum": [
+        "2D_PDF",
+        "2D_DXF",
+        "SPEC_SHEET"
+      ]
+    },
+    "DfmCheckId": {
+      "description": "CNC: corner_r, thin_wall, precision_fit, coating_shift, datum_setup. 3D printing: orientation, overhang, heat_insert, shrinkage.",
+      "enum": [
+        "corner_r",
+        "thin_wall",
+        "precision_fit",
+        "coating_shift",
+        "datum_setup",
+        "orientation",
+        "overhang",
+        "heat_insert",
+        "shrinkage"
+      ]
+    },
+    "Severity": {
+      "enum": [
+        "CRITICAL",
+        "MAJOR",
+        "INFO"
+      ]
+    },
+    "SpecCardV2": {
+      "title": "SpecCardV2",
+      "description": "Structured manufacturing spec of one revision (§3). Phase 1~3 spec_card_json ({} or legacy keys) is upgraded to this shape by the API parser.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "process",
+        "material",
+        "heat_treatment",
+        "surface_finish",
+        "general_tolerance",
+        "critical_tolerances",
+        "threads_and_inserts",
+        "order"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "2.0"
+        },
+        "process": {
+          "$ref": "#/$defs/ManufacturingProcess"
+        },
+        "material": {
+          "$ref": "#/$defs/MaterialSpec"
+        },
+        "heat_treatment": {
+          "$ref": "#/$defs/HeatTreatment"
+        },
+        "surface_finish": {
+          "$ref": "#/$defs/SurfaceFinish"
+        },
+        "general_tolerance": {
+          "$ref": "#/$defs/GeneralTolerance"
+        },
+        "critical_tolerances": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CriticalTolerance"
+          },
+          "maxItems": 100
+        },
+        "threads_and_inserts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ThreadInsert"
+          },
+          "maxItems": 100
+        },
+        "additive_spec": {
+          "$ref": "#/$defs/AdditiveSpec"
+        },
+        "order": {
+          "$ref": "#/$defs/OrderSpec"
+        }
+      }
+    },
+    "MaterialSpec": {
+      "title": "MaterialSpec",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grade"
+      ],
+      "properties": {
+        "grade": {
+          "description": "e.g. AL6061-T6, SUS304, PA12. Empty string = not specified (MISSING_MATERIAL).",
+          "type": "string",
+          "maxLength": 120
+        },
+        "standard": {
+          "type": "string",
+          "maxLength": 120
+        }
+      }
+    },
+    "HeatTreatment": {
+      "title": "HeatTreatment",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required"
+      ],
+      "properties": {
+        "required": {
+          "type": "boolean"
+        },
+        "spec": {
+          "type": "string",
+          "maxLength": 200
+        }
+      }
+    },
+    "SurfaceFinish": {
+      "title": "SurfaceFinish",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "description": "e.g. 흑색 아노다이징 Type II, 비드 블라스트, As-machined. Empty string = not specified.",
+          "type": "string",
+          "maxLength": 120
+        },
+        "anodizing_thickness_um": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "color": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "ra_um": {
+          "type": "number",
+          "minimum": 0
+        },
+        "masking_note": {
+          "type": "string",
+          "maxLength": 300
+        }
+      }
+    },
+    "GeneralTolerance": {
+      "title": "GeneralTolerance",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "standard"
+      ],
+      "properties": {
+        "standard": {
+          "enum": [
+            "ISO_2768_fH",
+            "ISO_2768_mK",
+            "ISO_2768_cL",
+            "CUSTOM",
+            "UNSPECIFIED"
+          ]
+        },
+        "custom_note": {
+          "type": "string",
+          "maxLength": 300
+        }
+      }
+    },
+    "CriticalTolerance": {
+      "title": "CriticalTolerance",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "location",
+        "spec"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "location": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "spec": {
+          "description": "e.g. Ø6 H7, 20 ±0.02, ⌖ 0.05 A|B",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "datum_ref": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "linked_face_id": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "ThreadInsert": {
+      "title": "ThreadInsert",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "spec",
+        "count",
+        "insert_type"
+      ],
+      "properties": {
+        "spec": {
+          "description": "e.g. M5x0.8",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "depth_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "insert_type": {
+          "enum": [
+            "TAPPED_DIRECT",
+            "HELICOIL",
+            "HEAT_SET_BRASS",
+            "PEM"
+          ]
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 300
+        }
+      }
+    },
+    "AdditiveSpec": {
+      "title": "AdditiveSpec",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "build_orientation"
+      ],
+      "properties": {
+        "build_orientation": {
+          "description": "e.g. Z+ = 도면 정면, 베이스 면 하향. Empty string = not specified (MISSING_BUILD_ORIENTATION).",
+          "type": "string",
+          "maxLength": 200
+        },
+        "layer_height_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "infill_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "wall_loops": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "support_note": {
+          "type": "string",
+          "maxLength": 300
+        }
+      }
+    },
+    "OrderSpec": {
+      "title": "OrderSpec",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inspection_level"
+      ],
+      "properties": {
+        "quantity": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "due_date": {
+          "description": "YYYY-MM-DD",
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "inspection_level": {
+          "enum": [
+            "NONE",
+            "DIMENSIONAL_SHEET",
+            "CMM_REPORT"
+          ]
+        }
+      }
+    },
+    "SpecDiffItem": {
+      "title": "SpecDiffItem",
+      "description": "One Base↔Target manufacturing-spec difference (§3.1). before/after are display strings (null = not specified).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "field",
+        "label",
+        "before",
+        "after",
+        "severity"
+      ],
+      "properties": {
+        "field": {
+          "description": "dotted path, e.g. material.grade, surface_finish.color, critical_tolerances",
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "before": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "after": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        }
+      }
+    },
+    "MissingSpecWarning": {
+      "title": "MissingSpecWarning",
+      "description": "§3.2: ACK_REQUIRED (MISSING_MATERIAL, MISSING_TOLERANCE) must be acknowledged before approval; CAUTION (UNDECLARED_THREAD, MISSING_BUILD_ORIENTATION) is informational.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "level",
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "enum": [
+            "MISSING_MATERIAL",
+            "MISSING_TOLERANCE",
+            "UNDECLARED_THREAD",
+            "MISSING_BUILD_ORIENTATION"
+          ]
+        },
+        "level": {
+          "enum": [
+            "ACK_REQUIRED",
+            "CAUTION"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "AttachmentItem": {
+      "title": "AttachmentItem",
+      "description": "2D drawing / spec sheet attached to a revision (revision_attachments, §1 + §4). url is a 15 min signed GET URL (null when not READY).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision_id",
+        "kind",
+        "filename",
+        "content_type",
+        "file_size_bytes",
+        "file_sha256",
+        "status",
+        "created_at",
+        "url"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "$ref": "#/$defs/AttachmentKind"
+        },
+        "filename": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "file_size_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "file_sha256": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "status": {
+          "enum": [
+            "PENDING_UPLOAD",
+            "READY",
+            "DELETED"
+          ]
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "SnapshotApprover": {
+      "title": "SnapshotApprover",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "contact",
+        "ip_hash"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contact": {
+          "description": "masked contact (e.g. 010-****-1234)",
+          "type": "string"
+        },
+        "ip_hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "SnapshotPart": {
+      "title": "SnapshotPart",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "part_number",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "part_number": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "SnapshotAttachment": {
+      "title": "SnapshotAttachment",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "filename",
+        "sha256"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "$ref": "#/$defs/AttachmentKind"
+        },
+        "filename": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/Sha256"
+        }
+      }
+    },
+    "SnapshotRevision": {
+      "title": "SnapshotRevision",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "rev_label",
+        "step_sha256",
+        "spec_version",
+        "spec_card",
+        "attachments"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rev_label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "step_sha256": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "spec_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "spec_card": {
+          "$ref": "#/$defs/SpecCardV2"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SnapshotAttachment"
+          }
+        }
+      }
+    },
+    "SnapshotDiffRun": {
+      "title": "SnapshotDiffRun",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "align_method",
+        "transform_4x4",
+        "manifest_sha256"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "align_method": {
+          "enum": [
+            "IDENTITY",
+            "AUTO_BREP_RANSAC",
+            "MANUAL_321"
+          ]
+        },
+        "transform_4x4": {
+          "description": "length 16, Row-Major, Target -> Base (same convention as diff_manifest.alignment.transform_4x4).",
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 16,
+          "maxItems": 16,
+          "tsType": "number[]"
+        },
+        "manifest_sha256": {
+          "description": "SHA-256 of the decoded diff_manifest.json bytes (null while no manifest exists).",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "GeometryChange": {
+      "title": "GeometryChange",
+      "description": "3D geometry change (diff_items row) as checked at approval time.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "change_key",
+        "category",
+        "severity",
+        "title",
+        "fact",
+        "hint_text",
+        "checked",
+        "checked_by"
+      ],
+      "properties": {
+        "change_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "title": {
+          "type": "string"
+        },
+        "fact": {
+          "type": "object",
+          "additionalProperties": {
+            "type": [
+              "number",
+              "string"
+            ]
+          }
+        },
+        "hint_text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "checked": {
+          "type": "boolean"
+        },
+        "checked_by": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "DfmAck": {
+      "title": "DfmAck",
+      "description": "§5.2 process-specific caution checklist the reviewer ticked (not an automatic DFM verdict).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "process",
+        "checked_ids"
+      ],
+      "properties": {
+        "process": {
+          "$ref": "#/$defs/ManufacturingProcess"
+        },
+        "checked_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DfmCheckId"
+          }
+        }
+      }
+    }
+  }
+}

@@ -16,10 +16,10 @@ from pathlib import Path
 import jsonschema
 from pydantic import ValidationError
 
-from revgate_contracts import AnalyticalMeta, DiffManifest, load_schema
+from revgate_contracts import AnalyticalMeta, ApprovalSnapshot, DiffManifest, SpecCardV2, load_schema
 from revgate_contracts import analytical_meta as am
 
-MODELS = {"analytical_meta": AnalyticalMeta, "diff_manifest": DiffManifest}
+MODELS = {"analytical_meta": AnalyticalMeta, "diff_manifest": DiffManifest, "manufacturing": ApprovalSnapshot}
 
 
 def main(example_dir: Path) -> int:
@@ -59,6 +59,19 @@ def main(example_dir: Path) -> int:
     expected = {am.PlaneParams.__name__, am.CylinderParams.__name__, am.ConeParams.__name__, am.OtherParams.__name__}
     assert kinds == expected, f"discriminated union resolved to {kinds}, expected {expected}"
     print("[codegen] pydantic ✓ FaceParams discriminated union resolves PLANE/CYLINDER/CONE/OTHER")
+
+    # Phase 4: SpecCardV2 is usable on its own (PATCH /v1/revisions/{id}/spec body) and stays strict:
+    # legacy Phase 1~3 cards ({} / {"material": "AL6061"}) must go through the API's upgrade parser.
+    snapshot = json.loads((example_dir / "manufacturing.example.json").read_text("utf-8"))
+    card = SpecCardV2.model_validate(snapshot["target_rev"]["spec_card"])
+    assert card.model_dump(mode="json", exclude_unset=True) == snapshot["target_rev"]["spec_card"]
+    for legacy in ({}, {"material": "AL6061"}, {"schema_version": "2.0"}):
+        try:
+            SpecCardV2.model_validate(legacy)
+        except ValidationError:
+            continue
+        raise AssertionError(f"SpecCardV2 accepted a legacy card without upgrade: {legacy}")
+    print("[codegen] pydantic ✓ SpecCardV2 standalone round-trip, legacy cards rejected without upgrade")
     return 0
 
 

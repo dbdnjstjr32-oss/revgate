@@ -22,10 +22,13 @@ def client_ip(request: Request | None) -> str | None:
 
 
 def record(db: AsyncSession, settings: Settings, *, workspace_id, entity_type: str, entity_id, actor: str, action: str,
-           payload: dict[str, Any] | None = None, request: Request | None = None) -> AuditEvent:
+           payload: dict[str, Any] | None = None, request: Request | None = None,
+           payload_sha256: str | None = None) -> AuditEvent:
+    """payload_sha256 overrides the hash of `payload` (e.g. APPROVED records the approval snapshot SHA-256 itself)."""
     ev = AuditEvent(
         workspace_id=workspace_id, entity_type=entity_type, entity_id=entity_id, actor_contact=actor, action=action,
-        ip_hash=ip_hash(settings, client_ip(request)), payload_sha256=canonical_sha256(payload) if payload is not None else None,
+        ip_hash=ip_hash(settings, client_ip(request)),
+        payload_sha256=payload_sha256 or (canonical_sha256(payload) if payload is not None else None),
     )
     db.add(ev)
     return ev

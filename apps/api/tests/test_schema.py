@@ -1,4 +1,4 @@
-"""Alembic migration + DDL contract (blueprint §3) against the real Postgres 16."""
+"""Alembic migration + DDL contract (blueprint §3 + Phase 4 §1) against the real Postgres 16."""
 
 from __future__ import annotations
 
@@ -17,16 +17,18 @@ from .conftest import APP_DB_DSN, DB_DSN, q
 
 API_ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_TABLES = ["workspaces", "users", "shop_inboxes", "parts", "revisions", "diff_runs", "diff_items",
-                   "review_links", "otp_sessions", "pin_comments", "audit_events"]
+                   "review_links", "otp_sessions", "pin_comments", "audit_events",
+                   "revision_attachments"]  # 12th table (Phase 4)
 EXPECTED_INDEXES = ["idx_users_ws", "idx_parts_ws_num", "idx_revisions_part", "idx_revisions_sha", "idx_diff_runs_pair",
-                    "idx_diff_items_run", "idx_review_links_run", "idx_otp_link", "idx_pins_run", "idx_audit_ws"]
+                    "idx_diff_items_run", "idx_review_links_run", "idx_otp_link", "idx_pins_run", "idx_audit_ws",
+                    "idx_rev_att_rev"]
 
 
 def test_alembic_head_applied(db):
-    assert q(db, "SELECT version_num FROM alembic_version") == [("0001_initial_schema",)]
+    assert q(db, "SELECT version_num FROM alembic_version") == [("0002_phase4_manufacturing_trust",)]
 
 
-def test_eleven_tables_with_orm_matching_columns(db):
+def test_twelve_tables_with_orm_matching_columns(db):
     tables = [r[0] for r in q(db, "SELECT table_name FROM information_schema.tables WHERE table_schema='public' "
                                   "AND table_name <> 'alembic_version' ORDER BY table_name")]
     assert sorted(tables) == sorted(EXPECTED_TABLES)
@@ -40,7 +42,9 @@ def test_eleven_tables_with_orm_matching_columns(db):
 def test_check_constraints_and_indexes(db):
     checks = {r[0] for r in q(db, "SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE contype='c'")}
     for fragment in ("'FREE'", "'ZERO_RETENTION'", "'OWNER'", "'PENDING_UPLOAD'", "'MANUAL_321'", "'NEEDS_ALIGN'",
-                     "'CRITICAL'", "'EXPIRED'", "'EXTERNAL'", "'TARGET'"):
+                     "'CRITICAL'", "'EXPIRED'", "'EXTERNAL'", "'TARGET'",
+                     # Phase 4
+                     "'NEW_REVISION'", "'DRAWING_UPDATED'", "'2D_DXF'", "'SPEC_SHEET'"):
         assert any(fragment in c for c in checks), fragment
     idx = {r[0] for r in q(db, "SELECT indexname FROM pg_indexes WHERE schemaname='public'")}
     assert set(EXPECTED_INDEXES) <= idx
@@ -49,6 +53,12 @@ def test_check_constraints_and_indexes(db):
     assert dict(q(db, "SELECT column_name, data_type FROM information_schema.columns WHERE table_name='audit_events'"))["id"] == "bigint"
     with pytest.raises(pgerr.CheckViolation):
         q(db, "INSERT INTO workspaces (id, name, plan) VALUES (%s, 'x', 'GOLD')", uuid.uuid4())
+    # Phase 4 columns: spec_version / dfm_ack_json defaults, JSONB snapshot
+    rev_cols = dict(q(db, "SELECT column_name, column_default FROM information_schema.columns WHERE table_name='revisions'"))
+    assert rev_cols["spec_version"] == "1" and "now()" in rev_cols["spec_updated_at"]
+    link_types = dict(q(db, "SELECT column_name, udt_name FROM information_schema.columns WHERE table_name='review_links'"))
+    assert link_types["approval_snapshot_json"] == "jsonb" and link_types["dfm_ack_json"] == "jsonb"
+    assert link_types["superseded_by_revision_id"] == "uuid"
 
 
 def test_audit_events_are_append_only(db):
@@ -77,6 +87,9 @@ def test_app_role_is_restricted(db):
     priv = dict(q(db, "SELECT privilege_type, 1 FROM information_schema.role_table_grants "
                       "WHERE grantee = 'revgate_app' AND table_name = 'audit_events'"))
     assert set(priv) == {"SELECT", "INSERT"}
+    att = {r[0] for r in q(db, "SELECT privilege_type FROM information_schema.role_table_grants "
+                               "WHERE grantee = 'revgate_app' AND table_name = 'revision_attachments'")}
+    assert att == {"SELECT", "INSERT", "UPDATE", "DELETE"}
 
 
 def test_migration_round_trip_on_scratch_database(db):
@@ -92,6 +105,6 @@ def test_migration_round_trip_on_scratch_database(db):
             with psycopg.connect(dsn, autocommit=True) as c:
                 n = c.execute("SELECT count(*) FROM information_schema.tables WHERE table_schema='public' "
                               "AND table_name <> 'alembic_version'").fetchone()[0]
-            assert n == (0 if args[0] == "downgrade" else 11), args
+            assert n == (0 if args[0] == "downgrade" else 12), args
     finally:
         q(db, f'DROP DATABASE IF EXISTS "{name}" WITH (FORCE)')

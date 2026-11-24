@@ -1,8 +1,13 @@
-/** API read models (apps/api/app/serializers.py). Geometry contracts come from @revgate/contracts. */
+/** API read models (apps/api/app/serializers.py). Geometry + Phase 4 manufacturing contracts come from @revgate/contracts. */
+
+import type { AttachmentItem, MissingSpecWarning, SpecCardV2, SpecDiffItem } from "@revgate/contracts";
 
 export type RevisionStatus = "PENDING_UPLOAD" | "QUEUED" | "PARSING" | "READY" | "FAILED";
 export type DiffStatus = "QUEUED" | "COMPUTING" | "READY" | "NEEDS_ALIGN" | "FAILED";
 export type LinkStatus = "ACTIVE" | "APPROVED" | "REVOKED" | "EXPIRED";
+/** Phase 4: an APPROVED link whose approval went stale (status itself stays APPROVED). */
+export type EffectiveLinkStatus = LinkStatus | "SUPERSEDED";
+export type SupersedeReason = "NEW_REVISION" | "SPEC_UPDATED" | "DRAWING_UPDATED";
 export type SecurityMode = "TTL_VAULT" | "ZERO_RETENTION";
 
 export interface User {
@@ -45,6 +50,11 @@ export interface Revision {
   viewer_prefix: string | null;
   spec_card_json: Record<string, unknown>;
   created_at: string;
+  // Phase 4
+  spec_version: number;
+  spec_updated_at: string;
+  spec_card: SpecCardV2;
+  attachments?: AttachmentItem[];
 }
 
 export interface DiffRun {
@@ -86,6 +96,14 @@ export interface ReviewLink {
   expires_at: string;
   approved_at: string | null;
   created_at: string;
+  // Phase 4
+  effective_status: EffectiveLinkStatus;
+  superseded_at: string | null;
+  superseded_reason: SupersedeReason | null;
+  superseded_by_revision_id: string | null;
+  latest_revision_label: string | null;
+  approval_snapshot_sha256: string | null;
+  dfm_ack: { process?: string; checked_ids?: string[] };
 }
 
 export interface Pin {
@@ -118,13 +136,26 @@ export interface SignedUrls {
   raw?: { base?: string; target?: string };
 }
 
-export interface DiffResponse {
+export interface SideAttachments {
+  base: AttachmentItem[];
+  target: AttachmentItem[];
+}
+
+/** Phase 4 manufacturing context returned next to the geometry diff. */
+export interface ManufacturingContext {
+  attachments: SideAttachments;
+  spec_diffs: SpecDiffItem[];
+  spec_warnings: MissingSpecWarning[];
+}
+
+export interface DiffResponse extends ManufacturingContext {
   diff_run: DiffRun;
   items: DiffItem[];
   signed_urls: SignedUrls;
+  revisions: { base: Revision; target: Revision };
 }
 
-export interface BundleResponse {
+export interface BundleResponse extends ManufacturingContext {
   link: ReviewLink;
   part: Part;
   revisions: { base: Revision; target: Revision };

@@ -3,7 +3,11 @@
 * OTP: 6 digits, HMAC-SHA256(secret, otp_session_id:code) at rest, 5 min TTL, at most 3 requests per
   link per 10 minutes (counted via UUIDv7 time order of otp_sessions.id), locked after 5 failures.
 * rg_ext_sid: HttpOnly cookie, 24 h, valid for exactly one review_link_id.
-* approve: row lock -> APPROVED (terminal) + snapshot PDF (WeasyPrint) into the WORM audit bucket.
+* approve: row lock -> APPROVED (terminal) + immutable approval snapshot (Phase 4 §2.1: review_links.
+  approval_snapshot_json + canonical approval_snapshot_sha256) -> PDF rendered from that snapshot only
+  (WeasyPrint) into the WORM audit bucket. Missing material / tolerance must be acknowledged first (§3.2).
+* Phase 4 §2.2: a superseded approval stays APPROVED but reports effective_status SUPERSEDED and no longer
+  hands out the original STEP files.
 """
 
 from __future__ import annotations
@@ -18,17 +22,23 @@ from redis.asyncio import Redis
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from revgate_contracts import ApprovalSnapshot
+
 from .. import audit, mailer
 from .. import serializers as S
+from .. import spec as SP
 from ..config import Settings
+from ..context import SpecContext, spec_context
 from ..deps import ExternalSession, external_session, get_db, get_redis, get_settings_dep, get_storage, utcnow
 from ..errors import ApiError, not_found
 from ..ids import uuid7, uuid7_floor
 from ..models import DiffItem, DiffRun, OtpSession, Part, PinComment, ReviewLink, Revision
 from ..pdf import render_approval_pdf
-from ..schemas import OtpVerifyIn
-from ..security import EXTERNAL_COOKIE, canonical_sha256, mask_contact, new_otp_code, new_token, otp_hash, otp_matches, set_cookie, sha256_hex
+from ..schemas import ApproveIn, OtpVerifyIn
+from ..security import EXTERNAL_COOKIE, ip_hash, mask_contact, new_otp_code, new_token, otp_hash, otp_matches, set_cookie, sha256_hex
 from ..storage import Storage
+from ..supersede import latest_revision_label
+from .diffs import _item_order
 
 router = APIRouter(prefix="/v1/public/links", tags=["public-links"])
 KST = ZoneInfo("Asia/Seoul")
@@ -69,7 +79,9 @@ async def link_meta(token: str, db: AsyncSession = Depends(get_db)):
     base, target = await db.get(Revision, run.base_rev_id), await db.get(Revision, run.target_rev_id)
     count = await db.scalar(select(func.count()).select_from(DiffItem).where(DiffItem.diff_run_id == run.id))
     return {"part_number": p.part_number, "rev_pair": {"base": base.rev_label, "target": target.rev_label},
-            "change_count": int(count or 0), "masked_contact": mask_contact(link.recipient_contact), "status": link.status}
+            "change_count": int(count or 0), "masked_contact": mask_contact(link.recipient_contact), "status": link.status,
+            "effective_status": "SUPERSEDED" if link.superseded_at is not None else link.status,
+            "superseded_reason": link.superseded_reason}
 
 
 @router.post("/{token}/otp/request")
@@ -140,24 +152,51 @@ async def bundle(token: str, request: Request, db: AsyncSession = Depends(get_db
     await _session_for(request, db, link)
     if run.status != "READY":
         raise ApiError(409, "DIFF_NOT_READY", f"diff run is {run.status}")
-    items = (await db.execute(select(DiffItem).where(DiffItem.diff_run_id == run.id))).scalars().all()
+    items = sorted((await db.execute(select(DiffItem).where(DiffItem.diff_run_id == run.id))).scalars().all(), key=_item_order)
     pins = (await db.execute(select(PinComment).where(PinComment.diff_run_id == run.id).order_by(PinComment.created_at))).scalars().all()
     base, target = await db.get(Revision, run.base_rev_id), await db.get(Revision, run.target_rev_id)
     urls = await S.diff_urls(storage, redis, run, base, target)
-    if link.allow_raw_download and link.status == "APPROVED":  # original STEP only after approval, by explicit grant
+    # original STEP only after approval, by explicit grant, and never once the approval is superseded (§2.2)
+    if link.allow_raw_download and link.status == "APPROVED" and link.superseded_at is None:
         urls["raw"] = {side: storage.presign_get(storage.raw, rev.raw_r2_key, filename=f"{p.part_number}_{rev.rev_label}.step")
                        for side, rev in (("base", base), ("target", target)) if rev.raw_r2_key}
+    ctx = await spec_context(db, p, base, target, items)
+    latest = await latest_revision_label(db, p.id)
     audit.record(db, settings, workspace_id=p.workspace_id, entity_type="review_link", entity_id=link.id,
                  actor=link.recipient_contact, action="LINK_VIEWED", request=request)
     await db.commit()
-    return {"link": S.link(link), "part": S.part(p), "revisions": {"base": S.revision(base), "target": S.revision(target)},
+    return {"link": S.link(link, latest), "part": S.part(p),
+            "revisions": {"base": S.revision(base, p), "target": S.revision(target, p)},
             "diff_run": S.diff_run(run), "items": [S.item(i) for i in items], "pins": [S.pin(x) for x in pins],
-            "signed_urls": urls, "watermark_text": watermark(link, run)}
+            "signed_urls": urls, "watermark_text": watermark(link, run),
+            # Phase 4
+            "attachments": ctx.attachments_json(storage), "spec_diffs": ctx.spec_diffs, "spec_warnings": ctx.spec_warnings}
+
+
+def _snapshot_revision(rev: Revision, card: dict, attachments: list) -> dict:
+    return {"id": str(rev.id), "rev_label": rev.rev_label, "step_sha256": rev.file_sha256, "spec_version": rev.spec_version,
+            "spec_card": card,
+            "attachments": [{"id": str(a.id), "kind": a.kind, "filename": a.filename, "sha256": a.file_sha256} for a in attachments]}
+
+
+def _dfm_ack(body: ApproveIn, ctx: SpecContext) -> dict:
+    process = ctx.target_card["process"]
+    allowed = SP.dfm_check_ids(process)
+    if body.dfm_ack is None:
+        return {"process": process, "checked_ids": []}
+    unknown = sorted(set(body.dfm_ack.checked_ids) - set(allowed))
+    if body.dfm_ack.process != process or unknown:
+        raise ApiError(422, "DFM_ACK_INVALID", f"DFM checklist must use the target process {process}",
+                       process=process, allowed=list(allowed), unknown=unknown)
+    checked = set(body.dfm_ack.checked_ids)
+    return {"process": process, "checked_ids": [c for c in allowed if c in checked]}  # canonical order
 
 
 @router.post("/{token}/approve")
-async def approve(token: str, request: Request, db: AsyncSession = Depends(get_db), redis: Redis = Depends(get_redis),
-                  storage: Storage = Depends(get_storage), settings: Settings = Depends(get_settings_dep)):
+async def approve(token: str, request: Request, body: ApproveIn | None = None, db: AsyncSession = Depends(get_db),
+                  redis: Redis = Depends(get_redis), storage: Storage = Depends(get_storage),
+                  settings: Settings = Depends(get_settings_dep)):
+    body = body or ApproveIn()
     link, run, p = await resolve_link(db, token, for_update=True)
     if link.status == "APPROVED":
         raise ApiError(409, "ALREADY_APPROVED", "this link was already approved", approved_at=S.iso(link.approved_at))
@@ -166,29 +205,51 @@ async def approve(token: str, request: Request, db: AsyncSession = Depends(get_d
     if run.status != "READY":
         raise ApiError(409, "DIFF_NOT_READY", f"diff run is {run.status}")
 
-    approved_at = utcnow()
-    items = (await db.execute(select(DiffItem).where(DiffItem.diff_run_id == run.id))).scalars().all()
+    items = sorted((await db.execute(select(DiffItem).where(DiffItem.diff_run_id == run.id))).scalars().all(), key=_item_order)
     pins = (await db.execute(select(PinComment).where(PinComment.diff_run_id == run.id).order_by(PinComment.created_at))).scalars().all()
     base, target = await db.get(Revision, run.base_rev_id), await db.get(Revision, run.target_rev_id)
-    manifest = await S.load_manifest(storage, redis, run.manifest_r2_key) if run.manifest_r2_key else {}
-    snapshot = {
-        "link": S.link(link), "part": S.part(p), "base": S.revision(base), "target": S.revision(target),
-        "diff_run": S.diff_run(run), "summary": manifest.get("summary", {}), "alignment": manifest.get("alignment", {}),
-        "items": [S.item(i) for i in items], "pins": [S.pin(x) for x in pins], "approved_at": approved_at.isoformat(),
-    }
-    snapshot["snapshot_sha256"] = canonical_sha256(snapshot)
-    snapshot["approved_at_kst"] = approved_at.astimezone(KST).strftime("%Y-%m-%d %H:%M:%S")
-    snapshot["confidence"] = f"{run.align_confidence:.3f}" if run.align_confidence is not None else "-"
+    ctx = await spec_context(db, p, base, target, items)
+    acked = set(body.acked_warnings)
+    missing_ack = [code for code in ctx.ack_required if code not in acked]
+    if missing_ack:  # §3.2 explicit acknowledgement of missing material / tolerance
+        raise ApiError(422, "SPEC_ACK_REQUIRED", "acknowledge the missing material / tolerance warnings first", required=missing_ack)
+    dfm = _dfm_ack(body, ctx)
 
-    pdf = await asyncio.to_thread(render_approval_pdf, snapshot)
+    approved_at = utcnow()
+    manifest_sha = sha256_hex(await storage.get_decoded(storage.viewer, run.manifest_r2_key)) if run.manifest_r2_key else None
+    snapshot = {
+        "snapshot_version": "1.0",
+        "approved_at": approved_at.isoformat(),
+        "approver": {"name": link.recipient_name, "contact": mask_contact(link.recipient_contact),
+                     "ip_hash": ip_hash(settings, audit.client_ip(request))},
+        "part": {"id": str(p.id), "part_number": p.part_number, "name": p.name},
+        "base_rev": _snapshot_revision(base, ctx.base_card, ctx.base_attachments),
+        "target_rev": _snapshot_revision(target, ctx.target_card, ctx.target_attachments),
+        "diff_run": {"id": str(run.id), "align_method": run.align_method, "transform_4x4": [float(x) for x in run.transform_4x4],
+                     "manifest_sha256": manifest_sha},
+        "spec_diffs": ctx.spec_diffs,
+        "geometry_changes": [{"change_key": i.change_key, "category": i.category, "severity": i.severity, "title": i.title,
+                              "fact": i.fact_json, "hint_text": i.hint_text, "checked": i.checked_at is not None,
+                              "checked_by": i.checked_by_contact} for i in items],
+        "dfm_ack": dfm,
+        "missing_spec_warnings_acked": sorted(acked & {w["code"] for w in ctx.spec_warnings}),
+        "unresolved_pin_count": sum(1 for x in pins if x.resolved_at is None),
+    }
+    ApprovalSnapshot.model_validate(snapshot)  # SSOT contract check before the record becomes immutable
+    snapshot_sha = SP.snapshot_sha256(snapshot)
+
+    pdf = await asyncio.to_thread(render_approval_pdf, snapshot, snapshot_sha)
     key = f"ws/{p.workspace_id}/links/{link.id}/approval-{approved_at:%Y%m%dT%H%M%SZ}.pdf"
     await storage.put_locked(storage.audit, key, pdf, "application/pdf",
                              retain_until=(approved_at + timedelta(days=settings.audit_retention_days)).astimezone(timezone.utc))
     link.status, link.approved_at, link.approval_pdf_r2_key = "APPROVED", approved_at, key
+    link.approval_snapshot_json, link.approval_snapshot_sha256, link.dfm_ack_json = snapshot, snapshot_sha, dfm
     pdf_sha = sha256_hex(pdf)
     audit.record(db, settings, workspace_id=p.workspace_id, entity_type="review_link", entity_id=link.id,
-                 actor=link.recipient_contact, action="LINK_APPROVED",
-                 payload={"pdf_key": key, "pdf_sha256": pdf_sha, "snapshot_sha256": snapshot["snapshot_sha256"]}, request=request)
+                 actor=link.recipient_contact, action="APPROVED", payload_sha256=snapshot_sha, request=request)
+    audit.record(db, settings, workspace_id=p.workspace_id, entity_type="review_link", entity_id=link.id,
+                 actor=link.recipient_contact, action="APPROVAL_PDF_SEALED",
+                 payload={"pdf_key": key, "pdf_sha256": pdf_sha, "snapshot_sha256": snapshot_sha}, request=request)
     await db.commit()
     return {"approved_at": approved_at.isoformat(), "pdf_signed_url": storage.presign_get(storage.audit, key, filename="approval.pdf"),
-            "pdf_sha256": pdf_sha, "snapshot_sha256": snapshot["snapshot_sha256"]}
+            "pdf_sha256": pdf_sha, "snapshot_sha256": snapshot_sha, "approval_snapshot": snapshot}

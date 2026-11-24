@@ -149,9 +149,11 @@ test.describe.serial("01_hole_diam: designer review → external OTP reviewer �
     await expect(page.getByTestId("pin-item")).toHaveCount(2);
     await expect(page.locator("[data-testid=pin-item]", { hasText: "가공업체" })).toHaveCount(1);
 
-    // approval needs every change checked
+    // approval needs every change checked (+ Phase 4: no tolerance / 2D PDF on the target -> forced acknowledgement)
     const submit = page.getByTestId("approve-submit");
     await page.getByTestId("approve-agree").check();
+    await expect(page.locator("[data-testid=spec-warning][data-code=MISSING_TOLERANCE]")).toHaveAttribute("data-level", "ACK_REQUIRED");
+    await page.getByTestId("spec-ack").check();
     await expect(submit).toBeDisabled();
     for (const box of await page.getByTestId("change-check").all()) await box.click();
     await expect(page.locator("[data-testid=change-item][data-checked=true]")).toHaveCount(2);

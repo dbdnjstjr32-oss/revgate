@@ -379,6 +379,7 @@ function PartPanel({ partId, mode }: { partId: string; mode: SecurityMode }) {
               <th>크기</th>
               <th>SHA-256</th>
               <th>원본</th>
+              <th>사양·도면</th>
               <th>업로드</th>
             </tr>
           </thead>
@@ -401,12 +402,15 @@ function PartPanel({ partId, mode }: { partId: string; mode: SecurityMode }) {
                 <td>{bytes(r.file_size_bytes)}</td>
                 <td className="font-mono text-[10px]">{r.file_sha256.slice(0, 12)}…</td>
                 <td>{r.raw_available ? "보관 중" : r.raw_purged_at ? "파기됨" : "-"}</td>
+                <td data-testid="revision-spec" className="text-slate-600">
+                  spec v{r.spec_version} · 2D {r.attachments?.length ?? 0}
+                </td>
                 <td className="text-slate-500">{when(r.created_at)}</td>
               </tr>
             ))}
             {detail.revisions.length === 0 && (
               <tr>
-                <td colSpan={7} className="py-2 text-slate-500">
+                <td colSpan={8} className="py-2 text-slate-500">
                   첫 리비전(Rev A)과 수정본(Rev B)을 올리세요.
                 </td>
               </tr>

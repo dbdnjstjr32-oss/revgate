@@ -78,6 +78,12 @@ class Storage:
             return h.hexdigest(), n
         return await asyncio.to_thread(_hash)
 
+    async def read_prefix(self, bucket: str, key: str, n: int) -> bytes:
+        """First n bytes (content sniffing of uploaded 2D drawings)."""
+        def _get():
+            return self.internal.get_object(Bucket=bucket, Key=key, Range=f"bytes=0-{n - 1}")["Body"].read()
+        return await asyncio.to_thread(_get)
+
     async def delete(self, bucket: str, key: str) -> None:
         await asyncio.to_thread(self.internal.delete_object, Bucket=bucket, Key=key)
 
@@ -103,3 +109,7 @@ class Storage:
 
 def raw_key(workspace_id, part_id, revision_id) -> str:
     return f"ws/{workspace_id}/parts/{part_id}/revisions/{revision_id}/raw.step"
+
+
+def attachment_key(workspace_id, part_id, revision_id, attachment_id) -> str:
+    return f"ws/{workspace_id}/parts/{part_id}/revisions/{revision_id}/attachments/{attachment_id}"

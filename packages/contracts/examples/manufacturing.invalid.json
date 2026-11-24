@@ -1,0 +1,3055 @@
+[
+  {
+    "name": "snapshot_version 2.0",
+    "document": {
+      "snapshot_version": "2.0",
+      "approved_at": "2026-11-24T01:30:00+00:00",
+      "approver": {
+        "name": "대한정밀 김사장",
+        "contact": "010-****-1234",
+        "ip_hash": "9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab"
+      },
+      "part": {
+        "id": "01a20000-0000-7000-8000-000000000001",
+        "part_number": "DRN-ARM-01",
+        "name": "Carbon-AL Motor Mount"
+      },
+      "base_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000a1",
+        "rev_label": "v1",
+        "step_sha256": "257082b66260475a6f5b5f04fd8e2c2b4ff5e7b6d3e8c0b1e2d5fa1c9b7e6d01",
+        "spec_version": 1,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL6061-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [],
+          "threads_and_inserts": [],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d1",
+            "kind": "2D_PDF",
+            "filename": "arm_v1.pdf",
+            "sha256": "3b1c4a6f0f3d2e5b8a9c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a"
+          }
+        ]
+      },
+      "target_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000b2",
+        "rev_label": "v2",
+        "step_sha256": "8658c7f98efe5c3e1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f7081",
+        "spec_version": 2,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL7075-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black",
+            "ra_um": 1.6,
+            "masking_note": "모터 장착면 마스킹"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [
+            {
+              "id": "CT1",
+              "location": "모터 축 홀",
+              "spec": "Ø6 H7",
+              "datum_ref": "A",
+              "linked_face_id": 9
+            }
+          ],
+          "threads_and_inserts": [
+            {
+              "spec": "M5x0.8",
+              "count": 2,
+              "depth_mm": 10,
+              "insert_type": "TAPPED_DIRECT"
+            }
+          ],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d2",
+            "kind": "2D_PDF",
+            "filename": "arm_v2.pdf",
+            "sha256": "4c2d5b7a1a4e3f6c9b0d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b"
+          },
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d3",
+            "kind": "2D_DXF",
+            "filename": "arm_v2_flat.dxf",
+            "sha256": "5d3e6c8b2b5f4a7d0c1e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c"
+          }
+        ]
+      },
+      "diff_run": {
+        "id": "01a20000-0000-7000-8000-0000000000c3",
+        "align_method": "AUTO_BREP_RANSAC",
+        "transform_4x4": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "manifest_sha256": "6e4f7d9c3c6a5b8e1d2f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d"
+      },
+      "spec_diffs": [
+        {
+          "field": "material.grade",
+          "label": "재질",
+          "before": "AL6061-T6",
+          "after": "AL7075-T6",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "critical_tolerances",
+          "label": "중요 공차",
+          "before": null,
+          "after": "CT1 모터 축 홀: Ø6 H7 [A]",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "surface_finish.ra_um",
+          "label": "표면 조도 Ra",
+          "before": null,
+          "after": "1.6 µm",
+          "severity": "MAJOR"
+        }
+      ],
+      "geometry_changes": [
+        {
+          "change_key": "HOLE_DIAMETER:9",
+          "category": "HOLE_DIAMETER",
+          "severity": "MAJOR",
+          "title": "홀 지름 변경: Ø3.30 → Ø4.20 (+0.90mm)",
+          "fact": {
+            "feature": "HOLE",
+            "from_diameter_mm": 3.3,
+            "to_diameter_mm": 4.2
+          },
+          "hint_text": "참고 추정: ISO M4 → M5 탭 기초홀 규격과 일치",
+          "checked": true,
+          "checked_by": "010-1234-5678"
+        }
+      ],
+      "dfm_ack": {
+        "process": "CNC_MILLING",
+        "checked_ids": [
+          "corner_r",
+          "thin_wall",
+          "coating_shift"
+        ]
+      },
+      "missing_spec_warnings_acked": [],
+      "unresolved_pin_count": 0
+    }
+  },
+  {
+    "name": "unknown manufacturing process",
+    "document": {
+      "snapshot_version": "1.0",
+      "approved_at": "2026-11-24T01:30:00+00:00",
+      "approver": {
+        "name": "대한정밀 김사장",
+        "contact": "010-****-1234",
+        "ip_hash": "9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab"
+      },
+      "part": {
+        "id": "01a20000-0000-7000-8000-000000000001",
+        "part_number": "DRN-ARM-01",
+        "name": "Carbon-AL Motor Mount"
+      },
+      "base_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000a1",
+        "rev_label": "v1",
+        "step_sha256": "257082b66260475a6f5b5f04fd8e2c2b4ff5e7b6d3e8c0b1e2d5fa1c9b7e6d01",
+        "spec_version": 1,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL6061-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [],
+          "threads_and_inserts": [],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d1",
+            "kind": "2D_PDF",
+            "filename": "arm_v1.pdf",
+            "sha256": "3b1c4a6f0f3d2e5b8a9c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a"
+          }
+        ]
+      },
+      "target_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000b2",
+        "rev_label": "v2",
+        "step_sha256": "8658c7f98efe5c3e1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f7081",
+        "spec_version": 2,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "LASER",
+          "material": {
+            "grade": "AL7075-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black",
+            "ra_um": 1.6,
+            "masking_note": "모터 장착면 마스킹"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [
+            {
+              "id": "CT1",
+              "location": "모터 축 홀",
+              "spec": "Ø6 H7",
+              "datum_ref": "A",
+              "linked_face_id": 9
+            }
+          ],
+          "threads_and_inserts": [
+            {
+              "spec": "M5x0.8",
+              "count": 2,
+              "depth_mm": 10,
+              "insert_type": "TAPPED_DIRECT"
+            }
+          ],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d2",
+            "kind": "2D_PDF",
+            "filename": "arm_v2.pdf",
+            "sha256": "4c2d5b7a1a4e3f6c9b0d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b"
+          },
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d3",
+            "kind": "2D_DXF",
+            "filename": "arm_v2_flat.dxf",
+            "sha256": "5d3e6c8b2b5f4a7d0c1e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c"
+          }
+        ]
+      },
+      "diff_run": {
+        "id": "01a20000-0000-7000-8000-0000000000c3",
+        "align_method": "AUTO_BREP_RANSAC",
+        "transform_4x4": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "manifest_sha256": "6e4f7d9c3c6a5b8e1d2f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d"
+      },
+      "spec_diffs": [
+        {
+          "field": "material.grade",
+          "label": "재질",
+          "before": "AL6061-T6",
+          "after": "AL7075-T6",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "critical_tolerances",
+          "label": "중요 공차",
+          "before": null,
+          "after": "CT1 모터 축 홀: Ø6 H7 [A]",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "surface_finish.ra_um",
+          "label": "표면 조도 Ra",
+          "before": null,
+          "after": "1.6 µm",
+          "severity": "MAJOR"
+        }
+      ],
+      "geometry_changes": [
+        {
+          "change_key": "HOLE_DIAMETER:9",
+          "category": "HOLE_DIAMETER",
+          "severity": "MAJOR",
+          "title": "홀 지름 변경: Ø3.30 → Ø4.20 (+0.90mm)",
+          "fact": {
+            "feature": "HOLE",
+            "from_diameter_mm": 3.3,
+            "to_diameter_mm": 4.2
+          },
+          "hint_text": "참고 추정: ISO M4 → M5 탭 기초홀 규격과 일치",
+          "checked": true,
+          "checked_by": "010-1234-5678"
+        }
+      ],
+      "dfm_ack": {
+        "process": "CNC_MILLING",
+        "checked_ids": [
+          "corner_r",
+          "thin_wall",
+          "coating_shift"
+        ]
+      },
+      "missing_spec_warnings_acked": [],
+      "unresolved_pin_count": 0
+    }
+  },
+  {
+    "name": "spec card without material",
+    "document": {
+      "snapshot_version": "1.0",
+      "approved_at": "2026-11-24T01:30:00+00:00",
+      "approver": {
+        "name": "대한정밀 김사장",
+        "contact": "010-****-1234",
+        "ip_hash": "9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab"
+      },
+      "part": {
+        "id": "01a20000-0000-7000-8000-000000000001",
+        "part_number": "DRN-ARM-01",
+        "name": "Carbon-AL Motor Mount"
+      },
+      "base_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000a1",
+        "rev_label": "v1",
+        "step_sha256": "257082b66260475a6f5b5f04fd8e2c2b4ff5e7b6d3e8c0b1e2d5fa1c9b7e6d01",
+        "spec_version": 1,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [],
+          "threads_and_inserts": [],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d1",
+            "kind": "2D_PDF",
+            "filename": "arm_v1.pdf",
+            "sha256": "3b1c4a6f0f3d2e5b8a9c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a"
+          }
+        ]
+      },
+      "target_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000b2",
+        "rev_label": "v2",
+        "step_sha256": "8658c7f98efe5c3e1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f7081",
+        "spec_version": 2,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL7075-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black",
+            "ra_um": 1.6,
+            "masking_note": "모터 장착면 마스킹"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [
+            {
+              "id": "CT1",
+              "location": "모터 축 홀",
+              "spec": "Ø6 H7",
+              "datum_ref": "A",
+              "linked_face_id": 9
+            }
+          ],
+          "threads_and_inserts": [
+            {
+              "spec": "M5x0.8",
+              "count": 2,
+              "depth_mm": 10,
+              "insert_type": "TAPPED_DIRECT"
+            }
+          ],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d2",
+            "kind": "2D_PDF",
+            "filename": "arm_v2.pdf",
+            "sha256": "4c2d5b7a1a4e3f6c9b0d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b"
+          },
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d3",
+            "kind": "2D_DXF",
+            "filename": "arm_v2_flat.dxf",
+            "sha256": "5d3e6c8b2b5f4a7d0c1e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c"
+          }
+        ]
+      },
+      "diff_run": {
+        "id": "01a20000-0000-7000-8000-0000000000c3",
+        "align_method": "AUTO_BREP_RANSAC",
+        "transform_4x4": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "manifest_sha256": "6e4f7d9c3c6a5b8e1d2f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d"
+      },
+      "spec_diffs": [
+        {
+          "field": "material.grade",
+          "label": "재질",
+          "before": "AL6061-T6",
+          "after": "AL7075-T6",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "critical_tolerances",
+          "label": "중요 공차",
+          "before": null,
+          "after": "CT1 모터 축 홀: Ø6 H7 [A]",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "surface_finish.ra_um",
+          "label": "표면 조도 Ra",
+          "before": null,
+          "after": "1.6 µm",
+          "severity": "MAJOR"
+        }
+      ],
+      "geometry_changes": [
+        {
+          "change_key": "HOLE_DIAMETER:9",
+          "category": "HOLE_DIAMETER",
+          "severity": "MAJOR",
+          "title": "홀 지름 변경: Ø3.30 → Ø4.20 (+0.90mm)",
+          "fact": {
+            "feature": "HOLE",
+            "from_diameter_mm": 3.3,
+            "to_diameter_mm": 4.2
+          },
+          "hint_text": "참고 추정: ISO M4 → M5 탭 기초홀 규격과 일치",
+          "checked": true,
+          "checked_by": "010-1234-5678"
+        }
+      ],
+      "dfm_ack": {
+        "process": "CNC_MILLING",
+        "checked_ids": [
+          "corner_r",
+          "thin_wall",
+          "coating_shift"
+        ]
+      },
+      "missing_spec_warnings_acked": [],
+      "unresolved_pin_count": 0
+    }
+  },
+  {
+    "name": "spec card schema_version 1.0",
+    "document": {
+      "snapshot_version": "1.0",
+      "approved_at": "2026-11-24T01:30:00+00:00",
+      "approver": {
+        "name": "대한정밀 김사장",
+        "contact": "010-****-1234",
+        "ip_hash": "9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab"
+      },
+      "part": {
+        "id": "01a20000-0000-7000-8000-000000000001",
+        "part_number": "DRN-ARM-01",
+        "name": "Carbon-AL Motor Mount"
+      },
+      "base_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000a1",
+        "rev_label": "v1",
+        "step_sha256": "257082b66260475a6f5b5f04fd8e2c2b4ff5e7b6d3e8c0b1e2d5fa1c9b7e6d01",
+        "spec_version": 1,
+        "spec_card": {
+          "schema_version": "1.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL6061-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [],
+          "threads_and_inserts": [],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d1",
+            "kind": "2D_PDF",
+            "filename": "arm_v1.pdf",
+            "sha256": "3b1c4a6f0f3d2e5b8a9c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a"
+          }
+        ]
+      },
+      "target_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000b2",
+        "rev_label": "v2",
+        "step_sha256": "8658c7f98efe5c3e1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f7081",
+        "spec_version": 2,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL7075-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black",
+            "ra_um": 1.6,
+            "masking_note": "모터 장착면 마스킹"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [
+            {
+              "id": "CT1",
+              "location": "모터 축 홀",
+              "spec": "Ø6 H7",
+              "datum_ref": "A",
+              "linked_face_id": 9
+            }
+          ],
+          "threads_and_inserts": [
+            {
+              "spec": "M5x0.8",
+              "count": 2,
+              "depth_mm": 10,
+              "insert_type": "TAPPED_DIRECT"
+            }
+          ],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d2",
+            "kind": "2D_PDF",
+            "filename": "arm_v2.pdf",
+            "sha256": "4c2d5b7a1a4e3f6c9b0d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b"
+          },
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d3",
+            "kind": "2D_DXF",
+            "filename": "arm_v2_flat.dxf",
+            "sha256": "5d3e6c8b2b5f4a7d0c1e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c"
+          }
+        ]
+      },
+      "diff_run": {
+        "id": "01a20000-0000-7000-8000-0000000000c3",
+        "align_method": "AUTO_BREP_RANSAC",
+        "transform_4x4": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "manifest_sha256": "6e4f7d9c3c6a5b8e1d2f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d"
+      },
+      "spec_diffs": [
+        {
+          "field": "material.grade",
+          "label": "재질",
+          "before": "AL6061-T6",
+          "after": "AL7075-T6",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "critical_tolerances",
+          "label": "중요 공차",
+          "before": null,
+          "after": "CT1 모터 축 홀: Ø6 H7 [A]",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "surface_finish.ra_um",
+          "label": "표면 조도 Ra",
+          "before": null,
+          "after": "1.6 µm",
+          "severity": "MAJOR"
+        }
+      ],
+      "geometry_changes": [
+        {
+          "change_key": "HOLE_DIAMETER:9",
+          "category": "HOLE_DIAMETER",
+          "severity": "MAJOR",
+          "title": "홀 지름 변경: Ø3.30 → Ø4.20 (+0.90mm)",
+          "fact": {
+            "feature": "HOLE",
+            "from_diameter_mm": 3.3,
+            "to_diameter_mm": 4.2
+          },
+          "hint_text": "참고 추정: ISO M4 → M5 탭 기초홀 규격과 일치",
+          "checked": true,
+          "checked_by": "010-1234-5678"
+        }
+      ],
+      "dfm_ack": {
+        "process": "CNC_MILLING",
+        "checked_ids": [
+          "corner_r",
+          "thin_wall",
+          "coating_shift"
+        ]
+      },
+      "missing_spec_warnings_acked": [],
+      "unresolved_pin_count": 0
+    }
+  },
+  {
+    "name": "extra key in spec card",
+    "document": {
+      "snapshot_version": "1.0",
+      "approved_at": "2026-11-24T01:30:00+00:00",
+      "approver": {
+        "name": "대한정밀 김사장",
+        "contact": "010-****-1234",
+        "ip_hash": "9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab"
+      },
+      "part": {
+        "id": "01a20000-0000-7000-8000-000000000001",
+        "part_number": "DRN-ARM-01",
+        "name": "Carbon-AL Motor Mount"
+      },
+      "base_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000a1",
+        "rev_label": "v1",
+        "step_sha256": "257082b66260475a6f5b5f04fd8e2c2b4ff5e7b6d3e8c0b1e2d5fa1c9b7e6d01",
+        "spec_version": 1,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL6061-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [],
+          "threads_and_inserts": [],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d1",
+            "kind": "2D_PDF",
+            "filename": "arm_v1.pdf",
+            "sha256": "3b1c4a6f0f3d2e5b8a9c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a"
+          }
+        ]
+      },
+      "target_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000b2",
+        "rev_label": "v2",
+        "step_sha256": "8658c7f98efe5c3e1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f7081",
+        "spec_version": 2,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL7075-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black",
+            "ra_um": 1.6,
+            "masking_note": "모터 장착면 마스킹"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [
+            {
+              "id": "CT1",
+              "location": "모터 축 홀",
+              "spec": "Ø6 H7",
+              "datum_ref": "A",
+              "linked_face_id": 9
+            }
+          ],
+          "threads_and_inserts": [
+            {
+              "spec": "M5x0.8",
+              "count": 2,
+              "depth_mm": 10,
+              "insert_type": "TAPPED_DIRECT"
+            }
+          ],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          },
+          "notes": "x"
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d2",
+            "kind": "2D_PDF",
+            "filename": "arm_v2.pdf",
+            "sha256": "4c2d5b7a1a4e3f6c9b0d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b"
+          },
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d3",
+            "kind": "2D_DXF",
+            "filename": "arm_v2_flat.dxf",
+            "sha256": "5d3e6c8b2b5f4a7d0c1e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c"
+          }
+        ]
+      },
+      "diff_run": {
+        "id": "01a20000-0000-7000-8000-0000000000c3",
+        "align_method": "AUTO_BREP_RANSAC",
+        "transform_4x4": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "manifest_sha256": "6e4f7d9c3c6a5b8e1d2f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d"
+      },
+      "spec_diffs": [
+        {
+          "field": "material.grade",
+          "label": "재질",
+          "before": "AL6061-T6",
+          "after": "AL7075-T6",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "critical_tolerances",
+          "label": "중요 공차",
+          "before": null,
+          "after": "CT1 모터 축 홀: Ø6 H7 [A]",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "surface_finish.ra_um",
+          "label": "표면 조도 Ra",
+          "before": null,
+          "after": "1.6 µm",
+          "severity": "MAJOR"
+        }
+      ],
+      "geometry_changes": [
+        {
+          "change_key": "HOLE_DIAMETER:9",
+          "category": "HOLE_DIAMETER",
+          "severity": "MAJOR",
+          "title": "홀 지름 변경: Ø3.30 → Ø4.20 (+0.90mm)",
+          "fact": {
+            "feature": "HOLE",
+            "from_diameter_mm": 3.3,
+            "to_diameter_mm": 4.2
+          },
+          "hint_text": "참고 추정: ISO M4 → M5 탭 기초홀 규격과 일치",
+          "checked": true,
+          "checked_by": "010-1234-5678"
+        }
+      ],
+      "dfm_ack": {
+        "process": "CNC_MILLING",
+        "checked_ids": [
+          "corner_r",
+          "thin_wall",
+          "coating_shift"
+        ]
+      },
+      "missing_spec_warnings_acked": [],
+      "unresolved_pin_count": 0
+    }
+  },
+  {
+    "name": "thread count 0",
+    "document": {
+      "snapshot_version": "1.0",
+      "approved_at": "2026-11-24T01:30:00+00:00",
+      "approver": {
+        "name": "대한정밀 김사장",
+        "contact": "010-****-1234",
+        "ip_hash": "9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab"
+      },
+      "part": {
+        "id": "01a20000-0000-7000-8000-000000000001",
+        "part_number": "DRN-ARM-01",
+        "name": "Carbon-AL Motor Mount"
+      },
+      "base_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000a1",
+        "rev_label": "v1",
+        "step_sha256": "257082b66260475a6f5b5f04fd8e2c2b4ff5e7b6d3e8c0b1e2d5fa1c9b7e6d01",
+        "spec_version": 1,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL6061-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [],
+          "threads_and_inserts": [],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d1",
+            "kind": "2D_PDF",
+            "filename": "arm_v1.pdf",
+            "sha256": "3b1c4a6f0f3d2e5b8a9c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a"
+          }
+        ]
+      },
+      "target_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000b2",
+        "rev_label": "v2",
+        "step_sha256": "8658c7f98efe5c3e1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f7081",
+        "spec_version": 2,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL7075-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black",
+            "ra_um": 1.6,
+            "masking_note": "모터 장착면 마스킹"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [
+            {
+              "id": "CT1",
+              "location": "모터 축 홀",
+              "spec": "Ø6 H7",
+              "datum_ref": "A",
+              "linked_face_id": 9
+            }
+          ],
+          "threads_and_inserts": [
+            {
+              "spec": "M5x0.8",
+              "count": 0,
+              "depth_mm": 10,
+              "insert_type": "TAPPED_DIRECT"
+            }
+          ],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d2",
+            "kind": "2D_PDF",
+            "filename": "arm_v2.pdf",
+            "sha256": "4c2d5b7a1a4e3f6c9b0d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b"
+          },
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d3",
+            "kind": "2D_DXF",
+            "filename": "arm_v2_flat.dxf",
+            "sha256": "5d3e6c8b2b5f4a7d0c1e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c"
+          }
+        ]
+      },
+      "diff_run": {
+        "id": "01a20000-0000-7000-8000-0000000000c3",
+        "align_method": "AUTO_BREP_RANSAC",
+        "transform_4x4": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "manifest_sha256": "6e4f7d9c3c6a5b8e1d2f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d"
+      },
+      "spec_diffs": [
+        {
+          "field": "material.grade",
+          "label": "재질",
+          "before": "AL6061-T6",
+          "after": "AL7075-T6",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "critical_tolerances",
+          "label": "중요 공차",
+          "before": null,
+          "after": "CT1 모터 축 홀: Ø6 H7 [A]",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "surface_finish.ra_um",
+          "label": "표면 조도 Ra",
+          "before": null,
+          "after": "1.6 µm",
+          "severity": "MAJOR"
+        }
+      ],
+      "geometry_changes": [
+        {
+          "change_key": "HOLE_DIAMETER:9",
+          "category": "HOLE_DIAMETER",
+          "severity": "MAJOR",
+          "title": "홀 지름 변경: Ø3.30 → Ø4.20 (+0.90mm)",
+          "fact": {
+            "feature": "HOLE",
+            "from_diameter_mm": 3.3,
+            "to_diameter_mm": 4.2
+          },
+          "hint_text": "참고 추정: ISO M4 → M5 탭 기초홀 규격과 일치",
+          "checked": true,
+          "checked_by": "010-1234-5678"
+        }
+      ],
+      "dfm_ack": {
+        "process": "CNC_MILLING",
+        "checked_ids": [
+          "corner_r",
+          "thin_wall",
+          "coating_shift"
+        ]
+      },
+      "missing_spec_warnings_acked": [],
+      "unresolved_pin_count": 0
+    }
+  },
+  {
+    "name": "due_date not YYYY-MM-DD",
+    "document": {
+      "snapshot_version": "1.0",
+      "approved_at": "2026-11-24T01:30:00+00:00",
+      "approver": {
+        "name": "대한정밀 김사장",
+        "contact": "010-****-1234",
+        "ip_hash": "9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab"
+      },
+      "part": {
+        "id": "01a20000-0000-7000-8000-000000000001",
+        "part_number": "DRN-ARM-01",
+        "name": "Carbon-AL Motor Mount"
+      },
+      "base_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000a1",
+        "rev_label": "v1",
+        "step_sha256": "257082b66260475a6f5b5f04fd8e2c2b4ff5e7b6d3e8c0b1e2d5fa1c9b7e6d01",
+        "spec_version": 1,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL6061-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [],
+          "threads_and_inserts": [],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d1",
+            "kind": "2D_PDF",
+            "filename": "arm_v1.pdf",
+            "sha256": "3b1c4a6f0f3d2e5b8a9c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a"
+          }
+        ]
+      },
+      "target_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000b2",
+        "rev_label": "v2",
+        "step_sha256": "8658c7f98efe5c3e1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f7081",
+        "spec_version": 2,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL7075-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black",
+            "ra_um": 1.6,
+            "masking_note": "모터 장착면 마스킹"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [
+            {
+              "id": "CT1",
+              "location": "모터 축 홀",
+              "spec": "Ø6 H7",
+              "datum_ref": "A",
+              "linked_face_id": 9
+            }
+          ],
+          "threads_and_inserts": [
+            {
+              "spec": "M5x0.8",
+              "count": 2,
+              "depth_mm": 10,
+              "insert_type": "TAPPED_DIRECT"
+            }
+          ],
+          "order": {
+            "quantity": 20,
+            "due_date": "12/10/2026",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d2",
+            "kind": "2D_PDF",
+            "filename": "arm_v2.pdf",
+            "sha256": "4c2d5b7a1a4e3f6c9b0d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b"
+          },
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d3",
+            "kind": "2D_DXF",
+            "filename": "arm_v2_flat.dxf",
+            "sha256": "5d3e6c8b2b5f4a7d0c1e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c"
+          }
+        ]
+      },
+      "diff_run": {
+        "id": "01a20000-0000-7000-8000-0000000000c3",
+        "align_method": "AUTO_BREP_RANSAC",
+        "transform_4x4": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "manifest_sha256": "6e4f7d9c3c6a5b8e1d2f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d"
+      },
+      "spec_diffs": [
+        {
+          "field": "material.grade",
+          "label": "재질",
+          "before": "AL6061-T6",
+          "after": "AL7075-T6",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "critical_tolerances",
+          "label": "중요 공차",
+          "before": null,
+          "after": "CT1 모터 축 홀: Ø6 H7 [A]",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "surface_finish.ra_um",
+          "label": "표면 조도 Ra",
+          "before": null,
+          "after": "1.6 µm",
+          "severity": "MAJOR"
+        }
+      ],
+      "geometry_changes": [
+        {
+          "change_key": "HOLE_DIAMETER:9",
+          "category": "HOLE_DIAMETER",
+          "severity": "MAJOR",
+          "title": "홀 지름 변경: Ø3.30 → Ø4.20 (+0.90mm)",
+          "fact": {
+            "feature": "HOLE",
+            "from_diameter_mm": 3.3,
+            "to_diameter_mm": 4.2
+          },
+          "hint_text": "참고 추정: ISO M4 → M5 탭 기초홀 규격과 일치",
+          "checked": true,
+          "checked_by": "010-1234-5678"
+        }
+      ],
+      "dfm_ack": {
+        "process": "CNC_MILLING",
+        "checked_ids": [
+          "corner_r",
+          "thin_wall",
+          "coating_shift"
+        ]
+      },
+      "missing_spec_warnings_acked": [],
+      "unresolved_pin_count": 0
+    }
+  },
+  {
+    "name": "unknown general tolerance",
+    "document": {
+      "snapshot_version": "1.0",
+      "approved_at": "2026-11-24T01:30:00+00:00",
+      "approver": {
+        "name": "대한정밀 김사장",
+        "contact": "010-****-1234",
+        "ip_hash": "9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab"
+      },
+      "part": {
+        "id": "01a20000-0000-7000-8000-000000000001",
+        "part_number": "DRN-ARM-01",
+        "name": "Carbon-AL Motor Mount"
+      },
+      "base_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000a1",
+        "rev_label": "v1",
+        "step_sha256": "257082b66260475a6f5b5f04fd8e2c2b4ff5e7b6d3e8c0b1e2d5fa1c9b7e6d01",
+        "spec_version": 1,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL6061-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [],
+          "threads_and_inserts": [],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d1",
+            "kind": "2D_PDF",
+            "filename": "arm_v1.pdf",
+            "sha256": "3b1c4a6f0f3d2e5b8a9c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a"
+          }
+        ]
+      },
+      "target_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000b2",
+        "rev_label": "v2",
+        "step_sha256": "8658c7f98efe5c3e1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f7081",
+        "spec_version": 2,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL7075-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black",
+            "ra_um": 1.6,
+            "masking_note": "모터 장착면 마스킹"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_xx"
+          },
+          "critical_tolerances": [
+            {
+              "id": "CT1",
+              "location": "모터 축 홀",
+              "spec": "Ø6 H7",
+              "datum_ref": "A",
+              "linked_face_id": 9
+            }
+          ],
+          "threads_and_inserts": [
+            {
+              "spec": "M5x0.8",
+              "count": 2,
+              "depth_mm": 10,
+              "insert_type": "TAPPED_DIRECT"
+            }
+          ],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d2",
+            "kind": "2D_PDF",
+            "filename": "arm_v2.pdf",
+            "sha256": "4c2d5b7a1a4e3f6c9b0d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b"
+          },
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d3",
+            "kind": "2D_DXF",
+            "filename": "arm_v2_flat.dxf",
+            "sha256": "5d3e6c8b2b5f4a7d0c1e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c"
+          }
+        ]
+      },
+      "diff_run": {
+        "id": "01a20000-0000-7000-8000-0000000000c3",
+        "align_method": "AUTO_BREP_RANSAC",
+        "transform_4x4": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "manifest_sha256": "6e4f7d9c3c6a5b8e1d2f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d"
+      },
+      "spec_diffs": [
+        {
+          "field": "material.grade",
+          "label": "재질",
+          "before": "AL6061-T6",
+          "after": "AL7075-T6",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "critical_tolerances",
+          "label": "중요 공차",
+          "before": null,
+          "after": "CT1 모터 축 홀: Ø6 H7 [A]",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "surface_finish.ra_um",
+          "label": "표면 조도 Ra",
+          "before": null,
+          "after": "1.6 µm",
+          "severity": "MAJOR"
+        }
+      ],
+      "geometry_changes": [
+        {
+          "change_key": "HOLE_DIAMETER:9",
+          "category": "HOLE_DIAMETER",
+          "severity": "MAJOR",
+          "title": "홀 지름 변경: Ø3.30 → Ø4.20 (+0.90mm)",
+          "fact": {
+            "feature": "HOLE",
+            "from_diameter_mm": 3.3,
+            "to_diameter_mm": 4.2
+          },
+          "hint_text": "참고 추정: ISO M4 → M5 탭 기초홀 규격과 일치",
+          "checked": true,
+          "checked_by": "010-1234-5678"
+        }
+      ],
+      "dfm_ack": {
+        "process": "CNC_MILLING",
+        "checked_ids": [
+          "corner_r",
+          "thin_wall",
+          "coating_shift"
+        ]
+      },
+      "missing_spec_warnings_acked": [],
+      "unresolved_pin_count": 0
+    }
+  },
+  {
+    "name": "unknown DFM check id",
+    "document": {
+      "snapshot_version": "1.0",
+      "approved_at": "2026-11-24T01:30:00+00:00",
+      "approver": {
+        "name": "대한정밀 김사장",
+        "contact": "010-****-1234",
+        "ip_hash": "9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab"
+      },
+      "part": {
+        "id": "01a20000-0000-7000-8000-000000000001",
+        "part_number": "DRN-ARM-01",
+        "name": "Carbon-AL Motor Mount"
+      },
+      "base_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000a1",
+        "rev_label": "v1",
+        "step_sha256": "257082b66260475a6f5b5f04fd8e2c2b4ff5e7b6d3e8c0b1e2d5fa1c9b7e6d01",
+        "spec_version": 1,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL6061-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [],
+          "threads_and_inserts": [],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d1",
+            "kind": "2D_PDF",
+            "filename": "arm_v1.pdf",
+            "sha256": "3b1c4a6f0f3d2e5b8a9c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a"
+          }
+        ]
+      },
+      "target_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000b2",
+        "rev_label": "v2",
+        "step_sha256": "8658c7f98efe5c3e1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f7081",
+        "spec_version": 2,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL7075-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black",
+            "ra_um": 1.6,
+            "masking_note": "모터 장착면 마스킹"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [
+            {
+              "id": "CT1",
+              "location": "모터 축 홀",
+              "spec": "Ø6 H7",
+              "datum_ref": "A",
+              "linked_face_id": 9
+            }
+          ],
+          "threads_and_inserts": [
+            {
+              "spec": "M5x0.8",
+              "count": 2,
+              "depth_mm": 10,
+              "insert_type": "TAPPED_DIRECT"
+            }
+          ],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d2",
+            "kind": "2D_PDF",
+            "filename": "arm_v2.pdf",
+            "sha256": "4c2d5b7a1a4e3f6c9b0d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b"
+          },
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d3",
+            "kind": "2D_DXF",
+            "filename": "arm_v2_flat.dxf",
+            "sha256": "5d3e6c8b2b5f4a7d0c1e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c"
+          }
+        ]
+      },
+      "diff_run": {
+        "id": "01a20000-0000-7000-8000-0000000000c3",
+        "align_method": "AUTO_BREP_RANSAC",
+        "transform_4x4": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "manifest_sha256": "6e4f7d9c3c6a5b8e1d2f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d"
+      },
+      "spec_diffs": [
+        {
+          "field": "material.grade",
+          "label": "재질",
+          "before": "AL6061-T6",
+          "after": "AL7075-T6",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "critical_tolerances",
+          "label": "중요 공차",
+          "before": null,
+          "after": "CT1 모터 축 홀: Ø6 H7 [A]",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "surface_finish.ra_um",
+          "label": "표면 조도 Ra",
+          "before": null,
+          "after": "1.6 µm",
+          "severity": "MAJOR"
+        }
+      ],
+      "geometry_changes": [
+        {
+          "change_key": "HOLE_DIAMETER:9",
+          "category": "HOLE_DIAMETER",
+          "severity": "MAJOR",
+          "title": "홀 지름 변경: Ø3.30 → Ø4.20 (+0.90mm)",
+          "fact": {
+            "feature": "HOLE",
+            "from_diameter_mm": 3.3,
+            "to_diameter_mm": 4.2
+          },
+          "hint_text": "참고 추정: ISO M4 → M5 탭 기초홀 규격과 일치",
+          "checked": true,
+          "checked_by": "010-1234-5678"
+        }
+      ],
+      "dfm_ack": {
+        "process": "CNC_MILLING",
+        "checked_ids": [
+          "corner_r",
+          "laser_focus"
+        ]
+      },
+      "missing_spec_warnings_acked": [],
+      "unresolved_pin_count": 0
+    }
+  },
+  {
+    "name": "attachment kind 3D_STEP",
+    "document": {
+      "snapshot_version": "1.0",
+      "approved_at": "2026-11-24T01:30:00+00:00",
+      "approver": {
+        "name": "대한정밀 김사장",
+        "contact": "010-****-1234",
+        "ip_hash": "9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab"
+      },
+      "part": {
+        "id": "01a20000-0000-7000-8000-000000000001",
+        "part_number": "DRN-ARM-01",
+        "name": "Carbon-AL Motor Mount"
+      },
+      "base_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000a1",
+        "rev_label": "v1",
+        "step_sha256": "257082b66260475a6f5b5f04fd8e2c2b4ff5e7b6d3e8c0b1e2d5fa1c9b7e6d01",
+        "spec_version": 1,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL6061-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [],
+          "threads_and_inserts": [],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d1",
+            "kind": "2D_PDF",
+            "filename": "arm_v1.pdf",
+            "sha256": "3b1c4a6f0f3d2e5b8a9c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a"
+          }
+        ]
+      },
+      "target_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000b2",
+        "rev_label": "v2",
+        "step_sha256": "8658c7f98efe5c3e1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f7081",
+        "spec_version": 2,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL7075-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black",
+            "ra_um": 1.6,
+            "masking_note": "모터 장착면 마스킹"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [
+            {
+              "id": "CT1",
+              "location": "모터 축 홀",
+              "spec": "Ø6 H7",
+              "datum_ref": "A",
+              "linked_face_id": 9
+            }
+          ],
+          "threads_and_inserts": [
+            {
+              "spec": "M5x0.8",
+              "count": 2,
+              "depth_mm": 10,
+              "insert_type": "TAPPED_DIRECT"
+            }
+          ],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d2",
+            "kind": "3D_STEP",
+            "filename": "arm_v2.pdf",
+            "sha256": "4c2d5b7a1a4e3f6c9b0d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b"
+          },
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d3",
+            "kind": "2D_DXF",
+            "filename": "arm_v2_flat.dxf",
+            "sha256": "5d3e6c8b2b5f4a7d0c1e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c"
+          }
+        ]
+      },
+      "diff_run": {
+        "id": "01a20000-0000-7000-8000-0000000000c3",
+        "align_method": "AUTO_BREP_RANSAC",
+        "transform_4x4": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "manifest_sha256": "6e4f7d9c3c6a5b8e1d2f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d"
+      },
+      "spec_diffs": [
+        {
+          "field": "material.grade",
+          "label": "재질",
+          "before": "AL6061-T6",
+          "after": "AL7075-T6",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "critical_tolerances",
+          "label": "중요 공차",
+          "before": null,
+          "after": "CT1 모터 축 홀: Ø6 H7 [A]",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "surface_finish.ra_um",
+          "label": "표면 조도 Ra",
+          "before": null,
+          "after": "1.6 µm",
+          "severity": "MAJOR"
+        }
+      ],
+      "geometry_changes": [
+        {
+          "change_key": "HOLE_DIAMETER:9",
+          "category": "HOLE_DIAMETER",
+          "severity": "MAJOR",
+          "title": "홀 지름 변경: Ø3.30 → Ø4.20 (+0.90mm)",
+          "fact": {
+            "feature": "HOLE",
+            "from_diameter_mm": 3.3,
+            "to_diameter_mm": 4.2
+          },
+          "hint_text": "참고 추정: ISO M4 → M5 탭 기초홀 규격과 일치",
+          "checked": true,
+          "checked_by": "010-1234-5678"
+        }
+      ],
+      "dfm_ack": {
+        "process": "CNC_MILLING",
+        "checked_ids": [
+          "corner_r",
+          "thin_wall",
+          "coating_shift"
+        ]
+      },
+      "missing_spec_warnings_acked": [],
+      "unresolved_pin_count": 0
+    }
+  },
+  {
+    "name": "attachment sha256 not hex64",
+    "document": {
+      "snapshot_version": "1.0",
+      "approved_at": "2026-11-24T01:30:00+00:00",
+      "approver": {
+        "name": "대한정밀 김사장",
+        "contact": "010-****-1234",
+        "ip_hash": "9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab"
+      },
+      "part": {
+        "id": "01a20000-0000-7000-8000-000000000001",
+        "part_number": "DRN-ARM-01",
+        "name": "Carbon-AL Motor Mount"
+      },
+      "base_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000a1",
+        "rev_label": "v1",
+        "step_sha256": "257082b66260475a6f5b5f04fd8e2c2b4ff5e7b6d3e8c0b1e2d5fa1c9b7e6d01",
+        "spec_version": 1,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL6061-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [],
+          "threads_and_inserts": [],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d1",
+            "kind": "2D_PDF",
+            "filename": "arm_v1.pdf",
+            "sha256": "3b1c4a6f0f3d2e5b8a9c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a"
+          }
+        ]
+      },
+      "target_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000b2",
+        "rev_label": "v2",
+        "step_sha256": "8658c7f98efe5c3e1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f7081",
+        "spec_version": 2,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL7075-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black",
+            "ra_um": 1.6,
+            "masking_note": "모터 장착면 마스킹"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [
+            {
+              "id": "CT1",
+              "location": "모터 축 홀",
+              "spec": "Ø6 H7",
+              "datum_ref": "A",
+              "linked_face_id": 9
+            }
+          ],
+          "threads_and_inserts": [
+            {
+              "spec": "M5x0.8",
+              "count": 2,
+              "depth_mm": 10,
+              "insert_type": "TAPPED_DIRECT"
+            }
+          ],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d2",
+            "kind": "2D_PDF",
+            "filename": "arm_v2.pdf",
+            "sha256": "abc"
+          },
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d3",
+            "kind": "2D_DXF",
+            "filename": "arm_v2_flat.dxf",
+            "sha256": "5d3e6c8b2b5f4a7d0c1e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c"
+          }
+        ]
+      },
+      "diff_run": {
+        "id": "01a20000-0000-7000-8000-0000000000c3",
+        "align_method": "AUTO_BREP_RANSAC",
+        "transform_4x4": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "manifest_sha256": "6e4f7d9c3c6a5b8e1d2f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d"
+      },
+      "spec_diffs": [
+        {
+          "field": "material.grade",
+          "label": "재질",
+          "before": "AL6061-T6",
+          "after": "AL7075-T6",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "critical_tolerances",
+          "label": "중요 공차",
+          "before": null,
+          "after": "CT1 모터 축 홀: Ø6 H7 [A]",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "surface_finish.ra_um",
+          "label": "표면 조도 Ra",
+          "before": null,
+          "after": "1.6 µm",
+          "severity": "MAJOR"
+        }
+      ],
+      "geometry_changes": [
+        {
+          "change_key": "HOLE_DIAMETER:9",
+          "category": "HOLE_DIAMETER",
+          "severity": "MAJOR",
+          "title": "홀 지름 변경: Ø3.30 → Ø4.20 (+0.90mm)",
+          "fact": {
+            "feature": "HOLE",
+            "from_diameter_mm": 3.3,
+            "to_diameter_mm": 4.2
+          },
+          "hint_text": "참고 추정: ISO M4 → M5 탭 기초홀 규격과 일치",
+          "checked": true,
+          "checked_by": "010-1234-5678"
+        }
+      ],
+      "dfm_ack": {
+        "process": "CNC_MILLING",
+        "checked_ids": [
+          "corner_r",
+          "thin_wall",
+          "coating_shift"
+        ]
+      },
+      "missing_spec_warnings_acked": [],
+      "unresolved_pin_count": 0
+    }
+  },
+  {
+    "name": "transform_4x4 with 15 numbers",
+    "document": {
+      "snapshot_version": "1.0",
+      "approved_at": "2026-11-24T01:30:00+00:00",
+      "approver": {
+        "name": "대한정밀 김사장",
+        "contact": "010-****-1234",
+        "ip_hash": "9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab"
+      },
+      "part": {
+        "id": "01a20000-0000-7000-8000-000000000001",
+        "part_number": "DRN-ARM-01",
+        "name": "Carbon-AL Motor Mount"
+      },
+      "base_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000a1",
+        "rev_label": "v1",
+        "step_sha256": "257082b66260475a6f5b5f04fd8e2c2b4ff5e7b6d3e8c0b1e2d5fa1c9b7e6d01",
+        "spec_version": 1,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL6061-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [],
+          "threads_and_inserts": [],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d1",
+            "kind": "2D_PDF",
+            "filename": "arm_v1.pdf",
+            "sha256": "3b1c4a6f0f3d2e5b8a9c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a"
+          }
+        ]
+      },
+      "target_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000b2",
+        "rev_label": "v2",
+        "step_sha256": "8658c7f98efe5c3e1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f7081",
+        "spec_version": 2,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL7075-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black",
+            "ra_um": 1.6,
+            "masking_note": "모터 장착면 마스킹"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [
+            {
+              "id": "CT1",
+              "location": "모터 축 홀",
+              "spec": "Ø6 H7",
+              "datum_ref": "A",
+              "linked_face_id": 9
+            }
+          ],
+          "threads_and_inserts": [
+            {
+              "spec": "M5x0.8",
+              "count": 2,
+              "depth_mm": 10,
+              "insert_type": "TAPPED_DIRECT"
+            }
+          ],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d2",
+            "kind": "2D_PDF",
+            "filename": "arm_v2.pdf",
+            "sha256": "4c2d5b7a1a4e3f6c9b0d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b"
+          },
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d3",
+            "kind": "2D_DXF",
+            "filename": "arm_v2_flat.dxf",
+            "sha256": "5d3e6c8b2b5f4a7d0c1e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c"
+          }
+        ]
+      },
+      "diff_run": {
+        "id": "01a20000-0000-7000-8000-0000000000c3",
+        "align_method": "AUTO_BREP_RANSAC",
+        "transform_4x4": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        "manifest_sha256": "6e4f7d9c3c6a5b8e1d2f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d"
+      },
+      "spec_diffs": [
+        {
+          "field": "material.grade",
+          "label": "재질",
+          "before": "AL6061-T6",
+          "after": "AL7075-T6",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "critical_tolerances",
+          "label": "중요 공차",
+          "before": null,
+          "after": "CT1 모터 축 홀: Ø6 H7 [A]",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "surface_finish.ra_um",
+          "label": "표면 조도 Ra",
+          "before": null,
+          "after": "1.6 µm",
+          "severity": "MAJOR"
+        }
+      ],
+      "geometry_changes": [
+        {
+          "change_key": "HOLE_DIAMETER:9",
+          "category": "HOLE_DIAMETER",
+          "severity": "MAJOR",
+          "title": "홀 지름 변경: Ø3.30 → Ø4.20 (+0.90mm)",
+          "fact": {
+            "feature": "HOLE",
+            "from_diameter_mm": 3.3,
+            "to_diameter_mm": 4.2
+          },
+          "hint_text": "참고 추정: ISO M4 → M5 탭 기초홀 규격과 일치",
+          "checked": true,
+          "checked_by": "010-1234-5678"
+        }
+      ],
+      "dfm_ack": {
+        "process": "CNC_MILLING",
+        "checked_ids": [
+          "corner_r",
+          "thin_wall",
+          "coating_shift"
+        ]
+      },
+      "missing_spec_warnings_acked": [],
+      "unresolved_pin_count": 0
+    }
+  },
+  {
+    "name": "spec diff severity LOW",
+    "document": {
+      "snapshot_version": "1.0",
+      "approved_at": "2026-11-24T01:30:00+00:00",
+      "approver": {
+        "name": "대한정밀 김사장",
+        "contact": "010-****-1234",
+        "ip_hash": "9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab"
+      },
+      "part": {
+        "id": "01a20000-0000-7000-8000-000000000001",
+        "part_number": "DRN-ARM-01",
+        "name": "Carbon-AL Motor Mount"
+      },
+      "base_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000a1",
+        "rev_label": "v1",
+        "step_sha256": "257082b66260475a6f5b5f04fd8e2c2b4ff5e7b6d3e8c0b1e2d5fa1c9b7e6d01",
+        "spec_version": 1,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL6061-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [],
+          "threads_and_inserts": [],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d1",
+            "kind": "2D_PDF",
+            "filename": "arm_v1.pdf",
+            "sha256": "3b1c4a6f0f3d2e5b8a9c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a"
+          }
+        ]
+      },
+      "target_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000b2",
+        "rev_label": "v2",
+        "step_sha256": "8658c7f98efe5c3e1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f7081",
+        "spec_version": 2,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL7075-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black",
+            "ra_um": 1.6,
+            "masking_note": "모터 장착면 마스킹"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [
+            {
+              "id": "CT1",
+              "location": "모터 축 홀",
+              "spec": "Ø6 H7",
+              "datum_ref": "A",
+              "linked_face_id": 9
+            }
+          ],
+          "threads_and_inserts": [
+            {
+              "spec": "M5x0.8",
+              "count": 2,
+              "depth_mm": 10,
+              "insert_type": "TAPPED_DIRECT"
+            }
+          ],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d2",
+            "kind": "2D_PDF",
+            "filename": "arm_v2.pdf",
+            "sha256": "4c2d5b7a1a4e3f6c9b0d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b"
+          },
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d3",
+            "kind": "2D_DXF",
+            "filename": "arm_v2_flat.dxf",
+            "sha256": "5d3e6c8b2b5f4a7d0c1e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c"
+          }
+        ]
+      },
+      "diff_run": {
+        "id": "01a20000-0000-7000-8000-0000000000c3",
+        "align_method": "AUTO_BREP_RANSAC",
+        "transform_4x4": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "manifest_sha256": "6e4f7d9c3c6a5b8e1d2f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d"
+      },
+      "spec_diffs": [
+        {
+          "field": "material.grade",
+          "label": "재질",
+          "before": "AL6061-T6",
+          "after": "AL7075-T6",
+          "severity": "LOW"
+        },
+        {
+          "field": "critical_tolerances",
+          "label": "중요 공차",
+          "before": null,
+          "after": "CT1 모터 축 홀: Ø6 H7 [A]",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "surface_finish.ra_um",
+          "label": "표면 조도 Ra",
+          "before": null,
+          "after": "1.6 µm",
+          "severity": "MAJOR"
+        }
+      ],
+      "geometry_changes": [
+        {
+          "change_key": "HOLE_DIAMETER:9",
+          "category": "HOLE_DIAMETER",
+          "severity": "MAJOR",
+          "title": "홀 지름 변경: Ø3.30 → Ø4.20 (+0.90mm)",
+          "fact": {
+            "feature": "HOLE",
+            "from_diameter_mm": 3.3,
+            "to_diameter_mm": 4.2
+          },
+          "hint_text": "참고 추정: ISO M4 → M5 탭 기초홀 규격과 일치",
+          "checked": true,
+          "checked_by": "010-1234-5678"
+        }
+      ],
+      "dfm_ack": {
+        "process": "CNC_MILLING",
+        "checked_ids": [
+          "corner_r",
+          "thin_wall",
+          "coating_shift"
+        ]
+      },
+      "missing_spec_warnings_acked": [],
+      "unresolved_pin_count": 0
+    }
+  },
+  {
+    "name": "negative unresolved pin count",
+    "document": {
+      "snapshot_version": "1.0",
+      "approved_at": "2026-11-24T01:30:00+00:00",
+      "approver": {
+        "name": "대한정밀 김사장",
+        "contact": "010-****-1234",
+        "ip_hash": "9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab"
+      },
+      "part": {
+        "id": "01a20000-0000-7000-8000-000000000001",
+        "part_number": "DRN-ARM-01",
+        "name": "Carbon-AL Motor Mount"
+      },
+      "base_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000a1",
+        "rev_label": "v1",
+        "step_sha256": "257082b66260475a6f5b5f04fd8e2c2b4ff5e7b6d3e8c0b1e2d5fa1c9b7e6d01",
+        "spec_version": 1,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL6061-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [],
+          "threads_and_inserts": [],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d1",
+            "kind": "2D_PDF",
+            "filename": "arm_v1.pdf",
+            "sha256": "3b1c4a6f0f3d2e5b8a9c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a"
+          }
+        ]
+      },
+      "target_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000b2",
+        "rev_label": "v2",
+        "step_sha256": "8658c7f98efe5c3e1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f7081",
+        "spec_version": 2,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL7075-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black",
+            "ra_um": 1.6,
+            "masking_note": "모터 장착면 마스킹"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [
+            {
+              "id": "CT1",
+              "location": "모터 축 홀",
+              "spec": "Ø6 H7",
+              "datum_ref": "A",
+              "linked_face_id": 9
+            }
+          ],
+          "threads_and_inserts": [
+            {
+              "spec": "M5x0.8",
+              "count": 2,
+              "depth_mm": 10,
+              "insert_type": "TAPPED_DIRECT"
+            }
+          ],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d2",
+            "kind": "2D_PDF",
+            "filename": "arm_v2.pdf",
+            "sha256": "4c2d5b7a1a4e3f6c9b0d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b"
+          },
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d3",
+            "kind": "2D_DXF",
+            "filename": "arm_v2_flat.dxf",
+            "sha256": "5d3e6c8b2b5f4a7d0c1e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c"
+          }
+        ]
+      },
+      "diff_run": {
+        "id": "01a20000-0000-7000-8000-0000000000c3",
+        "align_method": "AUTO_BREP_RANSAC",
+        "transform_4x4": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "manifest_sha256": "6e4f7d9c3c6a5b8e1d2f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d"
+      },
+      "spec_diffs": [
+        {
+          "field": "material.grade",
+          "label": "재질",
+          "before": "AL6061-T6",
+          "after": "AL7075-T6",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "critical_tolerances",
+          "label": "중요 공차",
+          "before": null,
+          "after": "CT1 모터 축 홀: Ø6 H7 [A]",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "surface_finish.ra_um",
+          "label": "표면 조도 Ra",
+          "before": null,
+          "after": "1.6 µm",
+          "severity": "MAJOR"
+        }
+      ],
+      "geometry_changes": [
+        {
+          "change_key": "HOLE_DIAMETER:9",
+          "category": "HOLE_DIAMETER",
+          "severity": "MAJOR",
+          "title": "홀 지름 변경: Ø3.30 → Ø4.20 (+0.90mm)",
+          "fact": {
+            "feature": "HOLE",
+            "from_diameter_mm": 3.3,
+            "to_diameter_mm": 4.2
+          },
+          "hint_text": "참고 추정: ISO M4 → M5 탭 기초홀 규격과 일치",
+          "checked": true,
+          "checked_by": "010-1234-5678"
+        }
+      ],
+      "dfm_ack": {
+        "process": "CNC_MILLING",
+        "checked_ids": [
+          "corner_r",
+          "thin_wall",
+          "coating_shift"
+        ]
+      },
+      "missing_spec_warnings_acked": [],
+      "unresolved_pin_count": -1
+    }
+  },
+  {
+    "name": "lower-case warning code",
+    "document": {
+      "snapshot_version": "1.0",
+      "approved_at": "2026-11-24T01:30:00+00:00",
+      "approver": {
+        "name": "대한정밀 김사장",
+        "contact": "010-****-1234",
+        "ip_hash": "9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab"
+      },
+      "part": {
+        "id": "01a20000-0000-7000-8000-000000000001",
+        "part_number": "DRN-ARM-01",
+        "name": "Carbon-AL Motor Mount"
+      },
+      "base_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000a1",
+        "rev_label": "v1",
+        "step_sha256": "257082b66260475a6f5b5f04fd8e2c2b4ff5e7b6d3e8c0b1e2d5fa1c9b7e6d01",
+        "spec_version": 1,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL6061-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [],
+          "threads_and_inserts": [],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d1",
+            "kind": "2D_PDF",
+            "filename": "arm_v1.pdf",
+            "sha256": "3b1c4a6f0f3d2e5b8a9c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a"
+          }
+        ]
+      },
+      "target_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000b2",
+        "rev_label": "v2",
+        "step_sha256": "8658c7f98efe5c3e1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f7081",
+        "spec_version": 2,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL7075-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black",
+            "ra_um": 1.6,
+            "masking_note": "모터 장착면 마스킹"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [
+            {
+              "id": "CT1",
+              "location": "모터 축 홀",
+              "spec": "Ø6 H7",
+              "datum_ref": "A",
+              "linked_face_id": 9
+            }
+          ],
+          "threads_and_inserts": [
+            {
+              "spec": "M5x0.8",
+              "count": 2,
+              "depth_mm": 10,
+              "insert_type": "TAPPED_DIRECT"
+            }
+          ],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d2",
+            "kind": "2D_PDF",
+            "filename": "arm_v2.pdf",
+            "sha256": "4c2d5b7a1a4e3f6c9b0d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b"
+          },
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d3",
+            "kind": "2D_DXF",
+            "filename": "arm_v2_flat.dxf",
+            "sha256": "5d3e6c8b2b5f4a7d0c1e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c"
+          }
+        ]
+      },
+      "diff_run": {
+        "id": "01a20000-0000-7000-8000-0000000000c3",
+        "align_method": "AUTO_BREP_RANSAC",
+        "transform_4x4": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "manifest_sha256": "6e4f7d9c3c6a5b8e1d2f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d"
+      },
+      "spec_diffs": [
+        {
+          "field": "material.grade",
+          "label": "재질",
+          "before": "AL6061-T6",
+          "after": "AL7075-T6",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "critical_tolerances",
+          "label": "중요 공차",
+          "before": null,
+          "after": "CT1 모터 축 홀: Ø6 H7 [A]",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "surface_finish.ra_um",
+          "label": "표면 조도 Ra",
+          "before": null,
+          "after": "1.6 µm",
+          "severity": "MAJOR"
+        }
+      ],
+      "geometry_changes": [
+        {
+          "change_key": "HOLE_DIAMETER:9",
+          "category": "HOLE_DIAMETER",
+          "severity": "MAJOR",
+          "title": "홀 지름 변경: Ø3.30 → Ø4.20 (+0.90mm)",
+          "fact": {
+            "feature": "HOLE",
+            "from_diameter_mm": 3.3,
+            "to_diameter_mm": 4.2
+          },
+          "hint_text": "참고 추정: ISO M4 → M5 탭 기초홀 규격과 일치",
+          "checked": true,
+          "checked_by": "010-1234-5678"
+        }
+      ],
+      "dfm_ack": {
+        "process": "CNC_MILLING",
+        "checked_ids": [
+          "corner_r",
+          "thin_wall",
+          "coating_shift"
+        ]
+      },
+      "missing_spec_warnings_acked": [
+        "missing_material"
+      ],
+      "unresolved_pin_count": 0
+    }
+  },
+  {
+    "name": "missing geometry_changes",
+    "document": {
+      "snapshot_version": "1.0",
+      "approved_at": "2026-11-24T01:30:00+00:00",
+      "approver": {
+        "name": "대한정밀 김사장",
+        "contact": "010-****-1234",
+        "ip_hash": "9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab"
+      },
+      "part": {
+        "id": "01a20000-0000-7000-8000-000000000001",
+        "part_number": "DRN-ARM-01",
+        "name": "Carbon-AL Motor Mount"
+      },
+      "base_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000a1",
+        "rev_label": "v1",
+        "step_sha256": "257082b66260475a6f5b5f04fd8e2c2b4ff5e7b6d3e8c0b1e2d5fa1c9b7e6d01",
+        "spec_version": 1,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL6061-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [],
+          "threads_and_inserts": [],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d1",
+            "kind": "2D_PDF",
+            "filename": "arm_v1.pdf",
+            "sha256": "3b1c4a6f0f3d2e5b8a9c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a"
+          }
+        ]
+      },
+      "target_rev": {
+        "id": "01a20000-0000-7000-8000-0000000000b2",
+        "rev_label": "v2",
+        "step_sha256": "8658c7f98efe5c3e1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f7081",
+        "spec_version": 2,
+        "spec_card": {
+          "schema_version": "2.0",
+          "process": "CNC_MILLING",
+          "material": {
+            "grade": "AL7075-T6",
+            "standard": "KS D 6701"
+          },
+          "heat_treatment": {
+            "required": false
+          },
+          "surface_finish": {
+            "type": "흑색 아노다이징 Type II",
+            "anodizing_thickness_um": "10-15",
+            "color": "Black",
+            "ra_um": 1.6,
+            "masking_note": "모터 장착면 마스킹"
+          },
+          "general_tolerance": {
+            "standard": "ISO_2768_mK"
+          },
+          "critical_tolerances": [
+            {
+              "id": "CT1",
+              "location": "모터 축 홀",
+              "spec": "Ø6 H7",
+              "datum_ref": "A",
+              "linked_face_id": 9
+            }
+          ],
+          "threads_and_inserts": [
+            {
+              "spec": "M5x0.8",
+              "count": 2,
+              "depth_mm": 10,
+              "insert_type": "TAPPED_DIRECT"
+            }
+          ],
+          "order": {
+            "quantity": 20,
+            "due_date": "2026-12-10",
+            "inspection_level": "DIMENSIONAL_SHEET"
+          }
+        },
+        "attachments": [
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d2",
+            "kind": "2D_PDF",
+            "filename": "arm_v2.pdf",
+            "sha256": "4c2d5b7a1a4e3f6c9b0d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b"
+          },
+          {
+            "id": "01a20000-0000-7000-8000-0000000000d3",
+            "kind": "2D_DXF",
+            "filename": "arm_v2_flat.dxf",
+            "sha256": "5d3e6c8b2b5f4a7d0c1e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c"
+          }
+        ]
+      },
+      "diff_run": {
+        "id": "01a20000-0000-7000-8000-0000000000c3",
+        "align_method": "AUTO_BREP_RANSAC",
+        "transform_4x4": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "manifest_sha256": "6e4f7d9c3c6a5b8e1d2f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d"
+      },
+      "spec_diffs": [
+        {
+          "field": "material.grade",
+          "label": "재질",
+          "before": "AL6061-T6",
+          "after": "AL7075-T6",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "critical_tolerances",
+          "label": "중요 공차",
+          "before": null,
+          "after": "CT1 모터 축 홀: Ø6 H7 [A]",
+          "severity": "CRITICAL"
+        },
+        {
+          "field": "surface_finish.ra_um",
+          "label": "표면 조도 Ra",
+          "before": null,
+          "after": "1.6 µm",
+          "severity": "MAJOR"
+        }
+      ],
+      "dfm_ack": {
+        "process": "CNC_MILLING",
+        "checked_ids": [
+          "corner_r",
+          "thin_wall",
+          "coating_shift"
+        ]
+      },
+      "missing_spec_warnings_acked": [],
+      "unresolved_pin_count": 0
+    }
+  }
+]

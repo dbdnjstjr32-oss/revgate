@@ -23,6 +23,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from .. import audit
 from .. import serializers as S
 from ..config import Settings
+from ..context import spec_context
 from ..deps import CurrentUser, current_user, get_arq, get_db, get_redis, get_settings_dep, get_storage, part_for_user, utcnow
 from ..errors import ApiError, not_found
 from ..events import STATUS_EVENT, TERMINAL_EVENTS, diff_channel, sse
@@ -31,6 +32,7 @@ from ..queue import enqueue_diff
 from ..schemas import DiffIn, LinkIn, RealignIn
 from ..security import is_rigid_transform, new_token, sha256_hex
 from ..storage import Storage
+from ..supersede import latest_revision_label
 
 router = APIRouter(prefix="/v1", tags=["diffs"])
 
@@ -78,13 +80,17 @@ async def create_diff(part_id: UUID, body: DiffIn, request: Request, cu: Current
 @router.get("/diffs/{diff_id}")
 async def get_diff(diff_id: UUID, cu: CurrentUser = Depends(current_user), db: AsyncSession = Depends(get_db),
                    redis: Redis = Depends(get_redis), storage: Storage = Depends(get_storage)):
-    run, _p = await run_for_user(db, diff_id, cu)
+    run, p = await run_for_user(db, diff_id, cu)
     items = []
     if run.status == "READY":
         items = (await db.execute(select(DiffItem).where(DiffItem.diff_run_id == run.id))).scalars().all()
     base, target = await db.get(Revision, run.base_rev_id), await db.get(Revision, run.target_rev_id)
+    ctx = await spec_context(db, p, base, target, items)
     return {"diff_run": S.diff_run(run), "items": [S.item(i) for i in sorted(items, key=_item_order)],
-            "signed_urls": await S.diff_urls(storage, redis, run, base, target)}
+            "signed_urls": await S.diff_urls(storage, redis, run, base, target),
+            # Phase 4: manufacturing spec + 2D drawings of both revisions
+            "revisions": {"base": S.revision(base, p), "target": S.revision(target, p)},
+            "attachments": ctx.attachments_json(storage), "spec_diffs": ctx.spec_diffs, "spec_warnings": ctx.spec_warnings}
 
 
 SEVERITY_RANK = {"CRITICAL": 0, "MAJOR": 1, "INFO": 2}
@@ -178,15 +184,20 @@ async def create_link(diff_id: UUID, body: LinkIn, request: Request, cu: Current
                  action="LINK_CREATED", payload={"recipient": body.recipient_name, "expires_in_days": body.expires_in_days},
                  request=request)
     await db.commit()
-    return {"link_id": str(link.id), "share_url": f"{settings.web_base_url}/r/{token}", "link": S.link(link)}
+    items = (await db.execute(select(DiffItem).where(DiffItem.diff_run_id == run.id))).scalars().all()
+    ctx = await spec_context(db, p, await db.get(Revision, run.base_rev_id), await db.get(Revision, run.target_rev_id), items)
+    # Phase 4 §3.2: missing material / tolerance is surfaced when the link is created (acknowledged at approval)
+    return {"link_id": str(link.id), "share_url": f"{settings.web_base_url}/r/{token}", "link": S.link(link),
+            "spec_warnings": ctx.spec_warnings}
 
 
 @router.get("/diffs/{diff_id}/links")
 async def list_links(diff_id: UUID, cu: CurrentUser = Depends(current_user), db: AsyncSession = Depends(get_db)):
     """Phase 3 read model: share links of a diff run (tokens are never stored, so no URLs here)."""
-    run, _p = await run_for_user(db, diff_id, cu)
+    run, p = await run_for_user(db, diff_id, cu)
     links = (await db.execute(select(ReviewLink).where(ReviewLink.diff_run_id == run.id).order_by(ReviewLink.created_at.desc()))).scalars()
-    return {"items": [S.link(l) for l in links]}
+    latest = await latest_revision_label(db, p.id)
+    return {"items": [S.link(l, latest) for l in links]}
 
 
 async def _link_for_user(db: AsyncSession, link_id: UUID, cu: CurrentUser) -> tuple[ReviewLink, Part]:
@@ -220,4 +231,5 @@ async def approval_pdf(link_id: UUID, cu: CurrentUser = Depends(current_user), d
     if link.status != "APPROVED" or not link.approval_pdf_r2_key:
         raise ApiError(404, "NO_APPROVAL", "link has not been approved")
     return {"pdf_signed_url": storage.presign_get(storage.audit, link.approval_pdf_r2_key, filename=f"approval-{link.id}.pdf"),
-            "approved_at": S.iso(link.approved_at)}
+            "approved_at": S.iso(link.approved_at), "approval_snapshot_sha256": link.approval_snapshot_sha256,
+            "effective_status": "SUPERSEDED" if link.superseded_at is not None else link.status}

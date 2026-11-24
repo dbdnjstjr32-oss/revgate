@@ -28,5 +28,33 @@ export type {
   FaceStatusMap,
   TargetFaceStatus,
 } from "./diff_manifest";
+export type {
+  AdditiveSpec,
+  ApprovalSnapshot,
+  AttachmentItem,
+  AttachmentKind,
+  CriticalTolerance,
+  DfmAck,
+  DfmCheckId,
+  GeneralTolerance,
+  GeometryChange,
+  HeatTreatment,
+  ManufacturingProcess,
+  MaterialSpec,
+  MissingSpecWarning,
+  OrderSpec,
+  Severity,
+  Sha256,
+  SnapshotApprover,
+  SnapshotAttachment,
+  SnapshotDiffRun,
+  SnapshotPart,
+  SnapshotRevision,
+  SpecCardV2,
+  SpecDiffItem,
+  SurfaceFinish,
+  ThreadInsert,
+  WarningCode,
+} from "./manufacturing";
 
 export const SCHEMA_VERSION = "1.0.0" as const;

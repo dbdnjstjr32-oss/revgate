@@ -16,6 +16,7 @@ export const STATUS_STYLE: Record<string, string> = {
   APPROVED: "bg-violet-100 text-violet-800",
   REVOKED: "bg-slate-200 text-slate-600",
   EXPIRED: "bg-slate-200 text-slate-600",
+  SUPERSEDED: "bg-red-100 text-red-800",
 };
 
 const UNIT_SUFFIX: [RegExp, string][] = [

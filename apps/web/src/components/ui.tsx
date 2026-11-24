@@ -41,7 +41,7 @@ export function Button({ variant = "primary", className = "", ...rest }: ButtonH
     <button
       type="button"
       {...rest}
-      className={`inline-flex items-center justify-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium transition disabled:cursor-not-allowed ${VARIANTS[variant]} ${className}`}
+      className={`inline-flex min-h-[44px] items-center justify-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium transition disabled:cursor-not-allowed ${VARIANTS[variant]} ${className}`}
     />
   );
 }
@@ -52,7 +52,7 @@ export function Toggle({ active, children, ...rest }: ButtonHTMLAttributes<HTMLB
       type="button"
       aria-pressed={active}
       {...rest}
-      className={`rounded-md px-2.5 py-1 text-xs font-medium ${active ? "bg-slate-900 text-white" : "bg-white text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50"}`}
+      className={`min-h-[44px] min-w-[44px] rounded-md px-2.5 py-1 text-xs font-medium disabled:text-slate-300 ${active ? "bg-slate-900 text-white" : "bg-white text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50"}`}
     >
       {children}
     </button>

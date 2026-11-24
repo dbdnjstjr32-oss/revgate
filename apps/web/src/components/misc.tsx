@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useEffect } from "react";
 
-import { bytes, shortId } from "@/lib/format";
-import type { DiffStatus, Part, Revision } from "@/lib/types";
+import { shortId } from "@/lib/format";
+import type { DiffStatus } from "@/lib/types";
 import { stageProgress, useDiffEvents } from "@/lib/useDiffEvents";
 
 const STAGE_LABEL: Record<string, string> = {
@@ -26,10 +26,13 @@ export function DiffProgress({ diffId, nonce = 0, onDone }: { diffId: string; no
   const status = ev.status ?? "QUEUED";
   const label = ev.done ? STAGE_LABEL[status] : STAGE_LABEL[ev.stage ?? status] ?? status;
   return (
-    <div data-testid="diff-progress" data-diff-id={diffId} data-status={ev.done ? status : "RUNNING"} className="space-y-1">
+    <div data-testid="diff-progress" data-diff-id={diffId} data-status={ev.done ? status : "RUNNING"} data-transport={ev.transport} className="space-y-1">
       <div className="flex justify-between text-[11px] text-slate-600">
         <span>Diff {shortId(diffId)} · {label}</span>
-        <span>{Math.round(stageProgress(ev) * 100)}%</span>
+        <span>
+          {ev.transport === "poll" && <span className="mr-1 rounded bg-amber-100 px-1 text-amber-800">폴링(4초)</span>}
+          {Math.round(stageProgress(ev) * 100)}%
+        </span>
       </div>
       <div className="h-2 overflow-hidden rounded bg-slate-200">
         <div
@@ -40,36 +43,6 @@ export function DiffProgress({ diffId, nonce = 0, onDone }: { diffId: string; no
       <p className="font-mono text-[10px] text-slate-400" data-testid="diff-events">
         {ev.events.map((e) => e.event + (e.data.stage ? `:${String(e.data.stage)}` : "")).join(" → ")}
       </p>
-    </div>
-  );
-}
-
-export function SpecCard({ part, base, target }: { part: Part; base?: Revision; target?: Revision }) {
-  const row = (rev: Revision | undefined, label: string) =>
-    rev ? (
-      <div className="rounded-md bg-slate-50 p-2">
-        <p className="font-semibold text-slate-800">
-          {label} · Rev {rev.rev_label}
-        </p>
-        <p className="font-mono text-[10px] text-slate-500">sha256 {rev.file_sha256.slice(0, 16)}… · {bytes(rev.file_size_bytes)}</p>
-        <p className="text-[11px] text-slate-600">원본: {rev.raw_available ? "보관 중" : "파기됨 (Zero-Retention)"}</p>
-        {Object.entries(rev.spec_card_json).map(([k, v]) => (
-          <p key={k} className="text-[11px] text-slate-600">
-            {k}: {typeof v === "object" ? JSON.stringify(v) : String(v)}
-          </p>
-        ))}
-      </div>
-    ) : null;
-  return (
-    <div data-testid="spec-card" className="space-y-1.5 text-xs">
-      <p>
-        <span className="font-semibold">{part.part_number}</span> {part.name}
-      </p>
-      <p className="text-slate-600">
-        소재 {part.default_material ?? "-"} · 후처리 {part.default_finish ?? "-"}
-      </p>
-      {row(base, "Base")}
-      {row(target, "Target")}
     </div>
   );
 }

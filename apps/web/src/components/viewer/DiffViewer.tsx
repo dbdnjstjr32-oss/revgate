@@ -5,7 +5,8 @@
  *  - base / target lod0 GLB, each ONE mesh + ONE draw call, highlighted through a 128x128 face LUT
  *  - target placed in the base frame with transform_4x4 (row-major, Target -> Base)
  *  - delta_added / delta_removed overlays, ghost mode, Before/After/Overlay
- *  - picking: hit.face.a -> attributes._face_id.getX(a)  (O(1))
+ *  - picking: hit.face.a -> attributes._face_id.getX(a)  (O(1)); only a real tap picks (< 200 ms, < 8 px —
+ *    Phase 4 §5.4) so orbit drags on a tablet never select / measure / pin by accident
  *  - OrbitControls with up = [0, 0, 1]; change focus = 450 ms easeOutCubic, cancelled by user input
  *  - drei <Html> pins with occlusion (opacity 0.25 when behind geometry)
  */
@@ -18,6 +19,7 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import type { OrbitControls as OrbitControlsImpl } from "three/examples/jsm/controls/OrbitControls.js";
 
+import { type PointerSample, isTap } from "@/lib/interaction";
 import type { V3 } from "@/lib/vec";
 
 import { createFaceLutMaterial, createLutTexture, faceIdOfHit, setGhost, writeLut } from "./faceLutMaterial";
@@ -62,11 +64,15 @@ export interface DiffViewerProps {
   focus: FocusRequest | null;
   pins: ViewerPin[];
   onPick?: (e: PickEvent) => void;
+  /** which GLB level is loaded (reported to window.__REVGATE_VIEWER__ for diagnostics) */
+  lod?: "lod0" | "lod1";
 }
 
 declare global {
   interface Window {
-    __REVGATE_VIEWER__?: { ready: boolean; calls: number; triangles: number; mode: ViewMode; ghost: boolean; lastPick?: PickEvent };
+    __REVGATE_VIEWER__?: {
+      ready: boolean; calls: number; triangles: number; mode: ViewMode; ghost: boolean; lod?: string; lastPick?: PickEvent;
+    };
   }
 }
 
@@ -132,8 +138,13 @@ function Model({ url, side, lut, visible, ghost, matrix, meshRef, onPick, onGeom
   }, [matrix, meshRef]);
   useEffect(() => onGeometry?.(geometry), [geometry, onGeometry]);
 
+  const down = useRef<PointerSample | null>(null);
+  const press = (e: ThreeEvent<PointerEvent>) => {
+    down.current = { t: performance.now(), x: e.nativeEvent.clientX, y: e.nativeEvent.clientY };
+  };
   const click = (e: ThreeEvent<MouseEvent>) => {
-    if (e.delta > 4 || e.face == null) return; // orbit drag, not a pick
+    const up = { t: performance.now(), x: e.nativeEvent.clientX, y: e.nativeEvent.clientY };
+    if (e.face == null || !isTap(down.current, up)) return; // orbit drag / long press, not a pick
     e.stopPropagation();
     const pick = { side, faceId: faceIdOfHit(geometry, e.face.a), point: [e.point.x, e.point.y, e.point.z] as V3 };
     if (window.__REVGATE_VIEWER__) window.__REVGATE_VIEWER__.lastPick = pick;
@@ -148,6 +159,7 @@ function Model({ url, side, lut, visible, ghost, matrix, meshRef, onPick, onGeom
       material={material}
       visible={visible}
       raycast={visible ? THREE.Mesh.prototype.raycast : noRaycast}
+      onPointerDown={press}
       onClick={click}
     />
   );
@@ -259,6 +271,7 @@ function Scene(props: DiffViewerProps) {
       triangles: gl.info.render.triangles,
       mode: props.mode,
       ghost: props.ghost,
+      lod: props.lod ?? "lod0",
     };
   });
 

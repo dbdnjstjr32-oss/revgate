@@ -135,3 +135,41 @@ class WorkspaceSettingsIn(BaseModel):
         if self.security_mode is None and self.retention_days is None:
             raise ValueError("provide security_mode and/or retention_days")
         return self
+
+# ---- Phase 4 (docs/PHASE4_MANUFACTURING_SPEC.md) --------------------------------------------------
+ATTACHMENT_MAX_BYTES = 25 * 1024 * 1024
+
+
+class AttachmentPresignIn(BaseModel):
+    kind: Literal["2D_PDF", "2D_DXF", "SPEC_SHEET"]
+    filename: str = Field(min_length=1, max_length=255)
+    content_type: str = Field(min_length=1, max_length=127)
+    file_size_bytes: int = Field(gt=0)
+    file_sha256: str
+
+    @field_validator("file_sha256")
+    @classmethod
+    def _sha(cls, v: str) -> str:
+        v = v.lower()
+        if not SHA256_RE.match(v):
+            raise ValueError("file_sha256 must be 64 hex characters")
+        return v
+
+    @field_validator("filename")
+    @classmethod
+    def _basename(cls, v: str) -> str:
+        v = v.replace("\\", "/").rsplit("/", 1)[-1].strip()
+        if not v or v in (".", ".."):
+            raise ValueError("invalid filename")
+        return v
+
+
+class DfmAckIn(BaseModel):
+    process: Literal["CNC_MILLING", "CNC_TURNING", "PRINT_FDM", "PRINT_SLA_SLS_MJF", "SHEET_METAL", "OTHER"]
+    checked_ids: list[str] = Field(default_factory=list, max_length=20)
+
+
+class ApproveIn(BaseModel):
+    """Optional body of POST /v1/public/links/{token}/approve (Phase 1~3 clients send none)."""
+    dfm_ack: DfmAckIn | None = None
+    acked_warnings: list[str] = Field(default_factory=list, max_length=20)

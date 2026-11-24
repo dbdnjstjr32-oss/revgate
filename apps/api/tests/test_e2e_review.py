@@ -97,8 +97,12 @@ def test_share_otp_pins_approve_pdf(http, redis, db, s3, hole_diff):
     pins = http.get(f"/v1/review/diffs/{diff_id}/pins", headers=E).json()["pins"]
     assert [p["id"] for p in pins] == [pin["id"], internal_pin["id"]]
 
-    # approve -> snapshot locked + PDF (WeasyPrint) in the WORM bucket
+    # approve -> snapshot locked + PDF (WeasyPrint) in the WORM bucket.
+    # Phase 4 §3.2: no tolerance / 2D PDF on the target -> MISSING_TOLERANCE must be acknowledged first
     r = http.post(f"/v1/public/links/{token}/approve", headers=E)
+    assert r.status_code == 422 and r.json()["error"]["code"] == "SPEC_ACK_REQUIRED"
+    assert r.json()["error"]["required"] == ["MISSING_TOLERANCE"]
+    r = http.post(f"/v1/public/links/{token}/approve", headers=E, json={"acked_warnings": ["MISSING_TOLERANCE"]})
     assert r.status_code == 200, r.text
     ap = r.json()
     pdf = httpx.get(ap["pdf_signed_url"], timeout=60)
@@ -125,7 +129,7 @@ def test_share_otp_pins_approve_pdf(http, redis, db, s3, hole_diff):
 
     actions = [r[0] for r in q(db, "SELECT action FROM audit_events WHERE entity_id = %s ORDER BY id", link_id)]
     assert actions[0] == "LINK_CREATED" and actions.count("OTP_FAILED") == 5 and actions.count("OTP_REQUESTED") == 2
-    assert actions.index("OTP_VERIFIED") < actions.index("LINK_APPROVED") < len(actions) - 1
+    assert actions.index("OTP_VERIFIED") < actions.index("APPROVED") < actions.index("APPROVAL_PDF_SEALED") < len(actions) - 1
     assert actions[-1] == "LINK_VIEWED"  # the post-approval (read-only) bundle view is audited too
     assert {r[0] for r in q(db, "SELECT action FROM audit_events WHERE entity_id IN (%s, %s, %s)",
                              item["id"], pin["id"], internal_pin["id"])} == {"DIFF_ITEM_CHECKED", "PIN_CREATED", "PIN_RESOLVED"}

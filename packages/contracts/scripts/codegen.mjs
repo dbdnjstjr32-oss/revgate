@@ -40,6 +40,9 @@ const SCHEMA_VERSION = "1.0.0";
 const CONTRACTS = [
   { module: "analytical_meta", root: "AnalyticalMeta", schema: "analytical_meta.schema.json" },
   { module: "diff_manifest", root: "DiffManifest", schema: "diff_manifest.schema.json" },
+  // Phase 4: approval snapshot + the shared manufacturing $defs (SpecCardV2, SpecDiffItem, MissingSpecWarning,
+  // AttachmentItem, ...). Some $defs are not reachable from the root, so emit every definition.
+  { module: "manufacturing", root: "ApprovalSnapshot", schema: "manufacturing.schema.json", allDefinitions: true },
 ];
 
 const TS_BANNER = `/* eslint-disable */
@@ -108,7 +111,7 @@ async function generateTs(schemas, outDir) {
       bannerComment: TS_BANNER,
       cwd: SCHEMA_DIR,
       additionalProperties: false,
-      unreachableDefinitions: false,
+      unreachableDefinitions: c.allDefinitions === true,
       strictIndexSignatures: true,
       format: true,
       style: { printWidth: 100, singleQuote: false, semi: true, trailingComma: "all" },
@@ -201,16 +204,20 @@ from typing import Any
 
 from .analytical_meta import AnalyticalMeta
 from .diff_manifest import DiffManifest
+from .manufacturing import ApprovalSnapshot, AttachmentItem, MissingSpecWarning, SpecCardV2, SpecDiffItem
 
 SCHEMA_VERSION = "${SCHEMA_VERSION}"
 
-__all__ = ["SCHEMA_VERSION", "AnalyticalMeta", "DiffManifest", "load_schema"]
+__all__ = [
+    "SCHEMA_VERSION", "AnalyticalMeta", "ApprovalSnapshot", "AttachmentItem", "DiffManifest", "MissingSpecWarning",
+    "SpecCardV2", "SpecDiffItem", "load_schema",
+]
 
 
 @cache
 def load_schema(name: str) -> dict[str, Any]:
-    """Return the JSON Schema dict for \`analytical_meta\` or \`diff_manifest\`."""
-    if name not in ("analytical_meta", "diff_manifest"):
+    """Return the JSON Schema dict for \`analytical_meta\`, \`diff_manifest\` or \`manufacturing\`."""
+    if name not in ("analytical_meta", "diff_manifest", "manufacturing"):
         raise KeyError(name)
     text = resources.files(__package__).joinpath("schemas", f"{name}.schema.json").read_text("utf-8")
     return json.loads(text)
@@ -252,10 +259,16 @@ async function verifyTs(tsDir, cases) {
   try {
     await cp(tsDir, path.join(tmp, "ts"), { recursive: true });
     const body = [
-      `import type { AnalyticalMeta, DiffManifest, FaceParams, Vec3 } from "./ts/index";`,
+      `import type { AnalyticalMeta, ApprovalSnapshot, AttachmentItem, DiffManifest, FaceParams, MissingSpecWarning, SpecCardV2, SpecDiffItem, Vec3 } from "./ts/index";`,
       `import { SCHEMA_VERSION } from "./ts/index";`,
       `export const meta = ${JSON.stringify(cases.analytical_meta.good, null, 2)} satisfies AnalyticalMeta;`,
       `export const manifest = ${JSON.stringify(cases.diff_manifest.good, null, 2)} satisfies DiffManifest;`,
+      `export const snapshot = ${JSON.stringify(cases.manufacturing.good, null, 2)} satisfies ApprovalSnapshot;`,
+      // Phase 4 shared read models must be exported and usable on their own
+      `export const card: SpecCardV2 = snapshot.target_rev.spec_card;`,
+      `export const diffs: SpecDiffItem[] = snapshot.spec_diffs;`,
+      `export const warn: MissingSpecWarning = { code: "MISSING_TOLERANCE", level: "ACK_REQUIRED", message: "x" };`,
+      `export const att: AttachmentItem = { id: "a", revision_id: "r", kind: "2D_DXF", filename: "f.dxf", content_type: "application/dxf", file_size_bytes: 1, file_sha256: "${"0".repeat(64)}", status: "READY", created_at: "2026-11-24T00:00:00Z", url: null };`,
       // discriminated-union narrowing must work on the generated types
       `export function radiusOf(p: FaceParams): number { return p.type === "CYLINDER" ? p.radius_mm : 0; }`,
       `export const v: Vec3 = [0, 0, 1];`,

@@ -2,13 +2,14 @@
 
 import { useRef, useState } from "react";
 
-export function Dropzone({ onFiles, label, hint, testId, disabled = false, multiple = false }: {
+export function Dropzone({ onFiles, label, hint, testId, disabled = false, multiple = false, accept = ".step,.stp" }: {
   onFiles: (files: File[]) => void;
   label: string;
   hint?: string;
   testId: string;
   disabled?: boolean;
   multiple?: boolean;
+  accept?: string;
 }) {
   const input = useRef<HTMLInputElement>(null);
   const [over, setOver] = useState(false);
@@ -30,7 +31,7 @@ export function Dropzone({ onFiles, label, hint, testId, disabled = false, multi
         setOver(false);
         if (!disabled && e.dataTransfer.files.length) onFiles(Array.from(e.dataTransfer.files));
       }}
-      className={`cursor-pointer rounded-lg border-2 border-dashed px-4 py-5 text-center text-sm transition ${
+      className={`min-h-[44px] cursor-pointer rounded-lg border-2 border-dashed px-4 py-5 text-center text-sm transition ${
         disabled ? "cursor-not-allowed border-slate-200 text-slate-400" : over ? "border-indigo-500 bg-indigo-50 text-indigo-700" : "border-slate-300 text-slate-600 hover:border-indigo-400"
       }`}
     >
@@ -40,7 +41,7 @@ export function Dropzone({ onFiles, label, hint, testId, disabled = false, multi
         ref={input}
         data-testid={`${testId}-input`}
         type="file"
-        accept=".step,.stp"
+        accept={accept}
         multiple={multiple}
         className="hidden"
         onChange={(e) => {

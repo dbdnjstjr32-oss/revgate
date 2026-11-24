@@ -10,16 +10,20 @@ from typing import Any
 
 from .analytical_meta import AnalyticalMeta
 from .diff_manifest import DiffManifest
+from .manufacturing import ApprovalSnapshot, AttachmentItem, MissingSpecWarning, SpecCardV2, SpecDiffItem
 
 SCHEMA_VERSION = "1.0.0"
 
-__all__ = ["SCHEMA_VERSION", "AnalyticalMeta", "DiffManifest", "load_schema"]
+__all__ = [
+    "SCHEMA_VERSION", "AnalyticalMeta", "ApprovalSnapshot", "AttachmentItem", "DiffManifest", "MissingSpecWarning",
+    "SpecCardV2", "SpecDiffItem", "load_schema",
+]
 
 
 @cache
 def load_schema(name: str) -> dict[str, Any]:
-    """Return the JSON Schema dict for `analytical_meta` or `diff_manifest`."""
-    if name not in ("analytical_meta", "diff_manifest"):
+    """Return the JSON Schema dict for `analytical_meta`, `diff_manifest` or `manufacturing`."""
+    if name not in ("analytical_meta", "diff_manifest", "manufacturing"):
         raise KeyError(name)
     text = resources.files(__package__).joinpath("schemas", f"{name}.schema.json").read_text("utf-8")
     return json.loads(text)

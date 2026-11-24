@@ -79,12 +79,16 @@ async def list_parts(cu: CurrentUser = Depends(current_user), db: AsyncSession =
 
 
 @router.get("/parts/{part_id}")
-async def get_part(part_id: UUID, cu: CurrentUser = Depends(current_user), db: AsyncSession = Depends(get_db)):
-    """Phase 3 read model for the web app: the part with its revisions and diff runs (newest first)."""
+async def get_part(part_id: UUID, cu: CurrentUser = Depends(current_user), db: AsyncSession = Depends(get_db),
+                   storage: Storage = Depends(get_storage)):
+    """Web read model: the part with its revisions (+ SpecCardV2, READY 2D attachments) and diff runs (newest first)."""
     p = await part_for_user(db, part_id, cu)
-    revs = (await db.execute(select(Revision).where(Revision.part_id == p.id).order_by(Revision.created_at.desc()))).scalars()
+    revs = (await db.execute(select(Revision).where(Revision.part_id == p.id).order_by(Revision.created_at.desc()))).scalars().all()
     runs = (await db.execute(select(DiffRun).where(DiffRun.part_id == p.id).order_by(DiffRun.created_at.desc()))).scalars()
-    return {"part": S.part(p), "revisions": [S.revision(r) for r in revs], "diff_runs": [S.diff_run(d) for d in runs]}
+    atts = await S.ready_attachments(db, [r.id for r in revs])
+    return {"part": S.part(p),
+            "revisions": [{**S.revision(r, p), "attachments": S.attachment_list(storage, atts[r.id])} for r in revs],
+            "diff_runs": [S.diff_run(d) for d in runs]}
 
 
 @router.post("/parts/{part_id}/revisions/presign")
@@ -180,5 +184,7 @@ async def complete_revision(rev_id: UUID, request: Request, body: CompleteIn | N
 @router.get("/revisions/{rev_id}")
 async def get_revision(rev_id: UUID, cu: CurrentUser = Depends(current_user), db: AsyncSession = Depends(get_db),
                        storage: Storage = Depends(get_storage)):
-    rev, _p = await _revision_for_user(db, rev_id, cu)
-    return {"revision": S.revision(rev), "signed_urls": S.revision_urls(storage, rev)}
+    rev, p = await _revision_for_user(db, rev_id, cu)
+    atts = await S.ready_attachments(db, [rev.id])
+    return {"revision": S.revision(rev, p), "signed_urls": S.revision_urls(storage, rev),
+            "attachments": S.attachment_list(storage, atts[rev.id])}

@@ -16,7 +16,9 @@
     "@react-three/drei": "10.7.9",
     "@react-three/fiber": "9.8.2",
     "@revgate/contracts": "workspace:*",
+    "dxf-parser": "1.1.2",
     "next": "15.5.29",
+    "pdfjs-dist": "5.7.284",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "three": "0.187.0"

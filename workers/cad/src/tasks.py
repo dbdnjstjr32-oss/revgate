@@ -121,12 +121,32 @@ async def ingest_revision(ctx: dict, revision_id: str) -> dict[str, Any]:
                 "UPDATE revisions SET status = 'READY', viewer_prefix = $2, error_code = NULL WHERE id = $1", rid, prefix)
             await audit(conn, row["workspace_id"], "revision", rid, "REVISION_READY",
                         {"viewer_prefix": prefix, "summary": res.result.get("summary"), "warnings": res.result.get("warnings")})
+            await supersede_for_new_revision(conn, row["workspace_id"], row["part_id"], rid)
         await publish(ctx, rev_channel(rid), "ready", {"revision_id": rid, "status": "READY", "viewer_prefix": prefix,
                                                        "warnings": res.result.get("warnings", [])})
         await maybe_purge(ctx, rid)
         return {"status": "READY", "uploads": uploads, "timings_ms": res.result.get("timings_ms")}
     finally:
         shutil.rmtree(job_dir, ignore_errors=True)
+
+
+# Phase 4 §2.2 NEW_REVISION: a newer revision of the part is READY -> every live approval of that part is stale.
+# review_links.status stays 'APPROVED' (historical record); the API reports effective_status = SUPERSEDED.
+SUPERSEDE_NEW_REVISION_SQL = (
+    "UPDATE review_links rl SET superseded_at = now(), superseded_reason = 'NEW_REVISION', superseded_by_revision_id = $2"
+    " FROM diff_runs d WHERE rl.diff_run_id = d.id AND d.part_id = $1 AND rl.status = 'APPROVED'"
+    " AND rl.superseded_at IS NULL AND d.base_rev_id <> $2 AND d.target_rev_id <> $2 RETURNING rl.id"
+)
+
+
+async def supersede_for_new_revision(conn, workspace_id, part_id, rev_id: UUID) -> int:
+    rows = await conn.fetch(SUPERSEDE_NEW_REVISION_SQL, part_id, rev_id)
+    for r in rows:
+        await audit(conn, workspace_id, "review_link", r["id"], "LINK_SUPERSEDED",
+                    {"reason": "NEW_REVISION", "revision_id": str(rev_id)})
+    if rows:
+        log.info("revision %s superseded %d approval(s) of part %s", rev_id, len(rows), part_id)
+    return len(rows)
 
 
 async def _fail_revision(ctx: dict, row, code: str, message: str | None = None) -> dict[str, Any]:
