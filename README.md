@@ -5,6 +5,25 @@
 - **전체 사용 매뉴얼:** [docs/USER_MANUAL.md](docs/USER_MANUAL.md) (발주처 설계자 · 가공업체 현장 작업자 · 접수함 · 관리자 가이드 & FAQ/에러 코드 사전)
 - **제품 및 아키텍처 문서:** [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md) · [docs/IMPLEMENTATION_BLUEPRINT.md](docs/IMPLEMENTATION_BLUEPRINT.md) · [docs/PHASE4_MANUFACTURING_SPEC.md](docs/PHASE4_MANUFACTURING_SPEC.md) · [docs/REVGATE_GUIDE.md](docs/REVGATE_GUIDE.md)
 
+<div align="center">
+
+<img src="docs/media/demo.gif" alt="RevGate 3D STEP Diff 및 2D 도면 분할 검토 데모" width="100%" />
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/media/review_3d.png" alt="OpenCASCADE B-Rep 3D Diff 리뷰어" width="100%" /><br/>
+      <sub><b>B-Rep 3D 형상 Diff · 홀 치수/제거 체적 자동 판정</b></sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/media/split_view.png" alt="3D+2D DXF 분할 보기 및 SpecCardV2" width="100%" /><br/>
+      <sub><b>3D+2D(DXF/PDF) 분할 뷰 · 고스트 오버레이 · SpecCardV2</b></sub>
+    </td>
+  </tr>
+</table>
+
+</div>
+
 ---
 
 ## 핵심 기능 (Phase 1 – 4)
